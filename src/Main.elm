@@ -97,25 +97,27 @@ calendarView model =
   let
     addDay date =
       Date.fromTime <| 24 * hour + (Date.toTime date)
-    isSchoolDay date =
-      if List.member date model.days_to_skip then
-        False
-      else
-        case Date.dayOfWeek date of
-          Date.Mon -> True
-          Date.Tue -> True
-          Date.Wed -> True
-          Date.Thu -> True
-          Date.Fri -> True
-          Date.Sat -> False
-          Date.Sun -> False
+
+    isWeekend date =
+      case Date.dayOfWeek date of
+        Date.Mon -> False
+        Date.Tue -> False
+        Date.Wed -> False
+        Date.Thu -> False
+        Date.Fri -> False
+        Date.Sat -> True
+        Date.Sun -> True
+
     calendarFor res date year n =
       if year /= Date.year date then
         res
-      else if isSchoolDay date then
-        calendarFor (res ++ [Html.div [] [ Html.text <| (toString date) ++ ": #" ++ (toString n) ]]) (addDay date) year (n + 1)
-      else
+      else if isWeekend date then
         calendarFor (res ++ [Html.div [] [ Html.text <| (toString date) ++ ": no school" ]]) (addDay date) year n
+      else if List.member date model.days_to_skip then
+        calendarFor (res ++ [Html.div [] [ Html.text <| (toString date) ++ ": skipped", Html.button [ Html.Events.onClick (UnskipDay date) ] [Html.text "unskip"] ]]) (addDay date) year n
+      else
+        calendarFor (res ++ [Html.div [] [ Html.text <| (toString date) ++ ": #" ++ (toString n), Html.button [ Html.Events.onClick (SkipDay date) ] [Html.text "skip"] ]]) (addDay date) year (n + 1)
+
     calendarStartingAt today =
       calendarFor [] today (Date.year today) ((alwaysInt model.days_finished) + 1)
   in
