@@ -1,7 +1,11 @@
+port module Main exposing (..)
+
 import Html
 
 type alias Msg = ()
 type alias Model = ()
+
+port title : String -> Cmd a
 
 main = Html.program
   { init = init
@@ -12,7 +16,7 @@ main = Html.program
 
 -- days left
 init : (Model, Cmd Msg)
-init = ((), Cmd.none)
+init = ((), title "School Days Remaining")
 
 sub : Model -> Sub Msg
 sub model = Sub.none
