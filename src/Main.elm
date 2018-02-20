@@ -112,11 +112,16 @@ calendarView model =
       if year /= Date.year date then
         res
       else if isWeekend date then
-        calendarFor (res ++ [Html.div [] [ Html.text <| (toString date) ++ ": no school" ]]) (addDay date) year n
+        calendarFor (res ++ (calendarDayView date "no school")) (addDay date) year n
       else if List.member date model.days_to_skip then
-        calendarFor (res ++ [Html.div [] [ Html.text <| (toString date) ++ ": skipped", Html.button [ Html.Events.onClick (UnskipDay date) ] [Html.text "unskip"] ]]) (addDay date) year n
+        calendarFor (res ++ skippableDayView date "skipped" UnskipDay) (addDay date) year n
       else
-        calendarFor (res ++ [Html.div [] [ Html.text <| (toString date) ++ ": #" ++ (toString n), Html.button [ Html.Events.onClick (SkipDay date) ] [Html.text "skip"] ]]) (addDay date) year (n + 1)
+        calendarFor (res ++ skippableDayView date ("#" ++ (toString n)) SkipDay) (addDay date) year (n + 1)
+
+    calendarDayView date desc =
+      [Html.div [] [ Html.text <| (toString date) ++ ": " ++ desc ]]
+    skippableDayView date desc act =
+      [Html.div [] [ Html.text <| (toString date) ++ ": " ++ desc, Html.button [ Html.Events.onClick (act date) ] [ Html.text "~" ] ]]
 
     calendarStartingAt today =
       calendarFor [] today (Date.year today) ((alwaysInt model.days_finished) + 1)

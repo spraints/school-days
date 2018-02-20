@@ -8806,6 +8806,60 @@ var _user$project$Main$SkipDay = function (a) {
 	return {ctor: 'SkipDay', _0: a};
 };
 var _user$project$Main$calendarView = function (model) {
+	var skippableDayView = F3(
+		function (date, desc, act) {
+			return {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(date),
+								A2(_elm_lang$core$Basics_ops['++'], ': ', desc))),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$button,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(
+										act(date)),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('~'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			};
+		});
+	var calendarDayView = F2(
+		function (date, desc) {
+			return {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(date),
+								A2(_elm_lang$core$Basics_ops['++'], ': ', desc))),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			};
+		});
 	var isWeekend = function (date) {
 		var _p4 = _elm_lang$core$Date$dayOfWeek(date);
 		switch (_p4.ctor) {
@@ -8842,22 +8896,7 @@ var _user$project$Main$calendarView = function (model) {
 						var _v4 = A2(
 							_elm_lang$core$Basics_ops['++'],
 							res,
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$div,
-									{ctor: '[]'},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(date),
-												': no school')),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}),
+							A2(calendarDayView, date, 'no school')),
 							_v5 = addDay(date),
 							_v6 = year,
 							_v7 = n;
@@ -8871,38 +8910,7 @@ var _user$project$Main$calendarView = function (model) {
 							var _v8 = A2(
 								_elm_lang$core$Basics_ops['++'],
 								res,
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$div,
-										{ctor: '[]'},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text(
-												A2(
-													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(date),
-													': skipped')),
-											_1: {
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$button,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onClick(
-															_user$project$Main$UnskipDay(date)),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text('unskip'),
-														_1: {ctor: '[]'}
-													}),
-												_1: {ctor: '[]'}
-											}
-										}),
-									_1: {ctor: '[]'}
-								}),
+								A3(skippableDayView, date, 'skipped', _user$project$Main$UnskipDay)),
 								_v9 = addDay(date),
 								_v10 = year,
 								_v11 = n;
@@ -8915,41 +8923,14 @@ var _user$project$Main$calendarView = function (model) {
 							var _v12 = A2(
 								_elm_lang$core$Basics_ops['++'],
 								res,
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$div,
-										{ctor: '[]'},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text(
-												A2(
-													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(date),
-													A2(
-														_elm_lang$core$Basics_ops['++'],
-														': #',
-														_elm_lang$core$Basics$toString(n)))),
-											_1: {
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$button,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onClick(
-															_user$project$Main$SkipDay(date)),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text('skip'),
-														_1: {ctor: '[]'}
-													}),
-												_1: {ctor: '[]'}
-											}
-										}),
-									_1: {ctor: '[]'}
-								}),
+								A3(
+									skippableDayView,
+									date,
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										'#',
+										_elm_lang$core$Basics$toString(n)),
+									_user$project$Main$SkipDay)),
 								_v13 = addDay(date),
 								_v14 = year,
 								_v15 = n + 1;
