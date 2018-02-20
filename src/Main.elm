@@ -119,15 +119,15 @@ calendarView model =
         calendarFor (res ++ skippableDayView date ("#" ++ (toString n)) SkipDay) (addDay date) year (n + 1)
 
     calendarDayView date desc =
-      [Html.div [] [ Html.text <| (toString date) ++ ": " ++ desc ]]
+      [ Html.tr [] [ Html.td [] [ Html.text <| toString date ], Html.td [] [ Html.text desc ] ] ]
     skippableDayView date desc act =
-      [Html.div [] [ Html.text <| (toString date) ++ ": " ++ desc, Html.button [ Html.Events.onClick (act date) ] [ Html.text "~" ] ]]
+      [ Html.tr [] [ Html.td [] [ Html.text <| toString date ], Html.td [] [ Html.text desc ], Html.td [] [ Html.button [ Html.Events.onClick (act date) ] [ Html.text "~" ] ] ] ]
 
     calendarStartingAt today =
       calendarFor [] today (Date.year today) ((alwaysInt model.days_finished) + 1)
   in
     case model.today of
-      Just today -> Html.div [] <| calendarStartingAt today
+      Just today -> Html.table [] <| calendarStartingAt today
       Nothing -> Html.text "don't know what today is :("
 
 alwaysInt : (String, ParsedInt) -> Int
