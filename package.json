@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "dependencies": {
+    "elm": "^0.18.0"
+  }
+}
