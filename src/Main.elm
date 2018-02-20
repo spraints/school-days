@@ -4,10 +4,12 @@ import Date exposing (Date)
 import Html
 import Html.Attributes
 import Html.Events
+import Task exposing (perform)
 
 type alias ParsedInt = Result String Int
 
-type Msg = UpdateDaysFinished (String, ParsedInt)
+type Msg = SetToday Date
+         | UpdateDaysFinished (String, ParsedInt)
          | UpdateDaysRequired (String, ParsedInt)
          | SkipDay Date
          | UnskipDay Date
@@ -15,7 +17,9 @@ type Msg = UpdateDaysFinished (String, ParsedInt)
 type alias Model =
   { days_finished : (String, ParsedInt)
   , days_required : (String, ParsedInt)
-  , days_to_skip : List Date }
+  , days_to_skip : List Date
+  , today : Maybe Date
+  }
 
 port title : String -> Cmd a
 
@@ -34,9 +38,14 @@ init =
       { days_finished = ("0", Ok 0)
       , days_required = ("180", Ok 180)
       , days_to_skip = []
+      , today = Nothing
       }
+    initialActions =
+      [ title "School Days Remaining"
+      , perform SetToday Date.now
+      ]
   in
-    (initialModel, title "School Days Remaining")
+    (initialModel, Cmd.batch initialActions)
 
 sub : Model -> Sub Msg
 sub model = Sub.none
@@ -46,6 +55,7 @@ update msg model =
   let
     updated_model =
       case msg of
+        SetToday date -> { model | today = Just date }
         UpdateDaysFinished n -> { model | days_finished = n }
         UpdateDaysRequired n -> { model | days_required = n }
         SkipDay date -> { model | days_to_skip = date :: model.days_to_skip }
@@ -83,4 +93,4 @@ configView model =
 
 calendarView : Model -> Html.Html Msg
 calendarView model =
-  Html.text "todo: calendar view"
+  Html.text <| toString model.today

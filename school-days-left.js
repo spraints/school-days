@@ -8739,13 +8739,20 @@ var _elm_lang$html$Html_Events$Options = F2(
 	});
 
 var _user$project$Main$calendarView = function (model) {
-	return _elm_lang$html$Html$text('todo: calendar view');
+	return _elm_lang$html$Html$text(
+		_elm_lang$core$Basics$toString(model.today));
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var updated_model = function () {
 			var _p0 = msg;
 			switch (_p0.ctor) {
+				case 'SetToday':
+					return _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							today: _elm_lang$core$Maybe$Just(_p0._0)
+						});
 				case 'UpdateDaysFinished':
 					return _elm_lang$core$Native_Utils.update(
 						model,
@@ -8783,29 +8790,9 @@ var _user$project$Main$title = _elm_lang$core$Native_Platform.outgoingPort(
 	function (v) {
 		return v;
 	});
-var _user$project$Main$init = function () {
-	var initialModel = {
-		days_finished: {
-			ctor: '_Tuple2',
-			_0: '0',
-			_1: _elm_lang$core$Result$Ok(0)
-		},
-		days_required: {
-			ctor: '_Tuple2',
-			_0: '180',
-			_1: _elm_lang$core$Result$Ok(180)
-		},
-		days_to_skip: {ctor: '[]'}
-	};
-	return {
-		ctor: '_Tuple2',
-		_0: initialModel,
-		_1: _user$project$Main$title('School Days Remaining')
-	};
-}();
-var _user$project$Main$Model = F3(
-	function (a, b, c) {
-		return {days_finished: a, days_required: b, days_to_skip: c};
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {days_finished: a, days_required: b, days_to_skip: c, today: d};
 	});
 var _user$project$Main$UnskipDay = function (a) {
 	return {ctor: 'UnskipDay', _0: a};
@@ -8928,6 +8915,39 @@ var _user$project$Main$view = function (model) {
 			}
 		});
 };
+var _user$project$Main$SetToday = function (a) {
+	return {ctor: 'SetToday', _0: a};
+};
+var _user$project$Main$init = function () {
+	var initialActions = {
+		ctor: '::',
+		_0: _user$project$Main$title('School Days Remaining'),
+		_1: {
+			ctor: '::',
+			_0: A2(_elm_lang$core$Task$perform, _user$project$Main$SetToday, _elm_lang$core$Date$now),
+			_1: {ctor: '[]'}
+		}
+	};
+	var initialModel = {
+		days_finished: {
+			ctor: '_Tuple2',
+			_0: '0',
+			_1: _elm_lang$core$Result$Ok(0)
+		},
+		days_required: {
+			ctor: '_Tuple2',
+			_0: '180',
+			_1: _elm_lang$core$Result$Ok(180)
+		},
+		days_to_skip: {ctor: '[]'},
+		today: _elm_lang$core$Maybe$Nothing
+	};
+	return {
+		ctor: '_Tuple2',
+		_0: initialModel,
+		_1: _elm_lang$core$Platform_Cmd$batch(initialActions)
+	};
+}();
 var _user$project$Main$main = _elm_lang$html$Html$program(
 	{init: _user$project$Main$init, subscriptions: _user$project$Main$sub, update: _user$project$Main$update, view: _user$project$Main$view})();
 
