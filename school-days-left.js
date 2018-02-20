@@ -8278,7 +8278,37 @@ var _user$project$Main$view = function (model) {
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		var updated_model = function () {
+			var _p0 = msg;
+			switch (_p0.ctor) {
+				case 'UpdateDaysFinished':
+					return _elm_lang$core$Native_Utils.update(
+						model,
+						{days_finished: _p0._0});
+				case 'UpdateDaysRequired':
+					return _elm_lang$core$Native_Utils.update(
+						model,
+						{days_required: _p0._0});
+				case 'SkipDay':
+					return _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							days_to_skip: {ctor: '::', _0: _p0._0, _1: model.days_to_skip}
+						});
+				default:
+					return _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							days_to_skip: A2(
+								_elm_lang$core$List$filter,
+								function (d) {
+									return !_elm_lang$core$Native_Utils.eq(d, _p0._0);
+								},
+								model.days_to_skip)
+						});
+			}
+		}();
+		return {ctor: '_Tuple2', _0: updated_model, _1: _elm_lang$core$Platform_Cmd$none};
 	});
 var _user$project$Main$sub = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
@@ -8303,6 +8333,18 @@ var _user$project$Main$Model = F3(
 	function (a, b, c) {
 		return {days_finished: a, days_required: b, days_to_skip: c};
 	});
+var _user$project$Main$UnskipDay = function (a) {
+	return {ctor: 'UnskipDay', _0: a};
+};
+var _user$project$Main$SkipDay = function (a) {
+	return {ctor: 'SkipDay', _0: a};
+};
+var _user$project$Main$UpdateDaysRequired = function (a) {
+	return {ctor: 'UpdateDaysRequired', _0: a};
+};
+var _user$project$Main$UpdateDaysFinished = function (a) {
+	return {ctor: 'UpdateDaysFinished', _0: a};
+};
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

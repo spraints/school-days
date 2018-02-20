@@ -3,8 +3,15 @@ port module Main exposing (..)
 import Date exposing (Date)
 import Html
 
-type alias Msg = ()
-type alias Model = { days_finished : Int, days_required : Int, days_to_skip : List Date }
+type Msg = UpdateDaysFinished Int
+         | UpdateDaysRequired Int
+         | SkipDay Date
+         | UnskipDay Date
+
+type alias Model =
+  { days_finished : Int
+  , days_required : Int
+  , days_to_skip : List Date }
 
 port title : String -> Cmd a
 
@@ -25,7 +32,15 @@ sub model = Sub.none
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  (model, Cmd.none)
+  let
+    updated_model =
+      case msg of
+        UpdateDaysFinished n -> { model | days_finished = n }
+        UpdateDaysRequired n -> { model | days_required = n }
+        SkipDay date -> { model | days_to_skip = date :: model.days_to_skip }
+        UnskipDay date -> { model | days_to_skip = List.filter (\d -> d /= date) model.days_to_skip }
+  in
+    (updated_model, Cmd.none)
 
 view : Model -> Html.Html Msg
 view model =
