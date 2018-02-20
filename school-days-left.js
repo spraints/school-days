@@ -8748,6 +8748,29 @@ var _user$project$Main$alwaysInt = function (_p0) {
 	}
 };
 var _user$project$Main$calendarView = function (model) {
+	var isSchoolDay = function (date) {
+		if (A2(_elm_lang$core$List$member, date, model.days_to_skip)) {
+			return false;
+		} else {
+			var _p3 = _elm_lang$core$Date$dayOfWeek(date);
+			switch (_p3.ctor) {
+				case 'Mon':
+					return true;
+				case 'Tue':
+					return true;
+				case 'Wed':
+					return true;
+				case 'Thu':
+					return true;
+				case 'Fri':
+					return true;
+				case 'Sat':
+					return false;
+				default:
+					return false;
+			}
+		}
+	};
 	var addDay = function (date) {
 		return _elm_lang$core$Date$fromTime(
 			(24 * _elm_lang$core$Time$hour) + _elm_lang$core$Date$toTime(date));
@@ -8761,36 +8784,66 @@ var _user$project$Main$calendarView = function (model) {
 					_elm_lang$core$Date$year(date))) {
 					return res;
 				} else {
-					var _v2 = A2(
-						_elm_lang$core$Basics_ops['++'],
-						res,
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										A2(
-											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(date),
+					if (isSchoolDay(date)) {
+						var _v3 = A2(
+							_elm_lang$core$Basics_ops['++'],
+							res,
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(
 											A2(
 												_elm_lang$core$Basics_ops['++'],
-												': #',
-												_elm_lang$core$Basics$toString(n)))),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}),
-						_v3 = addDay(date),
-						_v4 = year,
-						_v5 = n + 1;
-					res = _v2;
-					date = _v3;
-					year = _v4;
-					n = _v5;
-					continue calendarFor;
+												_elm_lang$core$Basics$toString(date),
+												A2(
+													_elm_lang$core$Basics_ops['++'],
+													': #',
+													_elm_lang$core$Basics$toString(n)))),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}),
+							_v4 = addDay(date),
+							_v5 = year,
+							_v6 = n + 1;
+						res = _v3;
+						date = _v4;
+						year = _v5;
+						n = _v6;
+						continue calendarFor;
+					} else {
+						var _v7 = A2(
+							_elm_lang$core$Basics_ops['++'],
+							res,
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												_elm_lang$core$Basics$toString(date),
+												': no school')),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}),
+							_v8 = addDay(date),
+							_v9 = year,
+							_v10 = n;
+						res = _v7;
+						date = _v8;
+						year = _v9;
+						n = _v10;
+						continue calendarFor;
+					}
 				}
 			}
 		});
@@ -8802,12 +8855,12 @@ var _user$project$Main$calendarView = function (model) {
 			_elm_lang$core$Date$year(today),
 			_user$project$Main$alwaysInt(model.days_finished) + 1);
 	};
-	var _p3 = model.today;
-	if (_p3.ctor === 'Just') {
+	var _p4 = model.today;
+	if (_p4.ctor === 'Just') {
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
-			calendarStartingAt(_p3._0));
+			calendarStartingAt(_p4._0));
 	} else {
 		return _elm_lang$html$Html$text('don\'t know what today is :(');
 	}
@@ -8815,27 +8868,27 @@ var _user$project$Main$calendarView = function (model) {
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var updated_model = function () {
-			var _p4 = msg;
-			switch (_p4.ctor) {
+			var _p5 = msg;
+			switch (_p5.ctor) {
 				case 'SetToday':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							today: _elm_lang$core$Maybe$Just(_p4._0)
+							today: _elm_lang$core$Maybe$Just(_p5._0)
 						});
 				case 'UpdateDaysFinished':
 					return _elm_lang$core$Native_Utils.update(
 						model,
-						{days_finished: _p4._0});
+						{days_finished: _p5._0});
 				case 'UpdateDaysRequired':
 					return _elm_lang$core$Native_Utils.update(
 						model,
-						{days_required: _p4._0});
+						{days_required: _p5._0});
 				case 'SkipDay':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							days_to_skip: {ctor: '::', _0: _p4._0, _1: model.days_to_skip}
+							days_to_skip: {ctor: '::', _0: _p5._0, _1: model.days_to_skip}
 						});
 				default:
 					return _elm_lang$core$Native_Utils.update(
@@ -8844,7 +8897,7 @@ var _user$project$Main$update = F2(
 							days_to_skip: A2(
 								_elm_lang$core$List$filter,
 								function (d) {
-									return !_elm_lang$core$Native_Utils.eq(d, _p4._0);
+									return !_elm_lang$core$Native_Utils.eq(d, _p5._0);
 								},
 								model.days_to_skip)
 						});
@@ -8887,8 +8940,8 @@ var _user$project$Main$configView = function (model) {
 				});
 		});
 	var configError = function (val) {
-		var _p5 = val;
-		if (_p5.ctor === 'Ok') {
+		var _p6 = val;
+		if (_p6.ctor === 'Ok') {
 			return _elm_lang$html$Html$text('');
 		} else {
 			return A2(
@@ -8900,14 +8953,14 @@ var _user$project$Main$configView = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(_p5._0),
+					_0: _elm_lang$html$Html$text(_p6._0),
 					_1: {ctor: '[]'}
 				});
 		}
 	};
 	var configLine = F3(
-		function (prompt, _p6, mkmsg) {
-			var _p7 = _p6;
+		function (prompt, _p7, mkmsg) {
+			var _p8 = _p7;
 			return A2(
 				_elm_lang$html$Html$tr,
 				{ctor: '[]'},
@@ -8936,7 +8989,7 @@ var _user$project$Main$configView = function (model) {
 											updateConfig(mkmsg)),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$value(_p7._0),
+											_0: _elm_lang$html$Html_Attributes$value(_p8._0),
 											_1: {ctor: '[]'}
 										}
 									},
@@ -8950,7 +9003,7 @@ var _user$project$Main$configView = function (model) {
 								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: configError(_p7._1),
+									_0: configError(_p8._1),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}

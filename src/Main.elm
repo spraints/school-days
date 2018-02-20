@@ -57,7 +57,7 @@ update msg model =
     updated_model =
       case msg of
         SetToday date -> { model | today = Just date }
-        UpdateDaysFinished n -> { model | days_finished = n }
+        UpdateDaysFinished n -> { model | days_finished = n } -- todo put this in the url?
         UpdateDaysRequired n -> { model | days_required = n }
         SkipDay date -> { model | days_to_skip = date :: model.days_to_skip }
         UnskipDay date -> { model | days_to_skip = List.filter (\d -> d /= date) model.days_to_skip }
@@ -97,11 +97,25 @@ calendarView model =
   let
     addDay date =
       Date.fromTime <| 24 * hour + (Date.toTime date)
+    isSchoolDay date =
+      if List.member date model.days_to_skip then
+        False
+      else
+        case Date.dayOfWeek date of
+          Date.Mon -> True
+          Date.Tue -> True
+          Date.Wed -> True
+          Date.Thu -> True
+          Date.Fri -> True
+          Date.Sat -> False
+          Date.Sun -> False
     calendarFor res date year n =
       if year /= Date.year date then
         res
-      else
+      else if isSchoolDay date then
         calendarFor (res ++ [Html.div [] [ Html.text <| (toString date) ++ ": #" ++ (toString n) ]]) (addDay date) year (n + 1)
+      else
+        calendarFor (res ++ [Html.div [] [ Html.text <| (toString date) ++ ": no school" ]]) (addDay date) year n
     calendarStartingAt today =
       calendarFor [] today (Date.year today) ((alwaysInt model.days_finished) + 1)
   in
