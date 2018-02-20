@@ -8738,34 +8738,104 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
+var _user$project$Main$alwaysInt = function (_p0) {
+	var _p1 = _p0;
+	var _p2 = _p1._1;
+	if (_p2.ctor === 'Err') {
+		return 0;
+	} else {
+		return _p2._0;
+	}
+};
 var _user$project$Main$calendarView = function (model) {
-	return _elm_lang$html$Html$text(
-		_elm_lang$core$Basics$toString(model.today));
+	var addDay = function (date) {
+		return _elm_lang$core$Date$fromTime(
+			(24 * _elm_lang$core$Time$hour) + _elm_lang$core$Date$toTime(date));
+	};
+	var calendarFor = F4(
+		function (res, date, year, n) {
+			calendarFor:
+			while (true) {
+				if (!_elm_lang$core$Native_Utils.eq(
+					year,
+					_elm_lang$core$Date$year(date))) {
+					return res;
+				} else {
+					var _v2 = A2(
+						_elm_lang$core$Basics_ops['++'],
+						res,
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											_elm_lang$core$Basics$toString(date),
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												': #',
+												_elm_lang$core$Basics$toString(n)))),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+						_v3 = addDay(date),
+						_v4 = year,
+						_v5 = n + 1;
+					res = _v2;
+					date = _v3;
+					year = _v4;
+					n = _v5;
+					continue calendarFor;
+				}
+			}
+		});
+	var calendarStartingAt = function (today) {
+		return A4(
+			calendarFor,
+			{ctor: '[]'},
+			today,
+			_elm_lang$core$Date$year(today),
+			_user$project$Main$alwaysInt(model.days_finished) + 1);
+	};
+	var _p3 = model.today;
+	if (_p3.ctor === 'Just') {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			calendarStartingAt(_p3._0));
+	} else {
+		return _elm_lang$html$Html$text('don\'t know what today is :(');
+	}
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var updated_model = function () {
-			var _p0 = msg;
-			switch (_p0.ctor) {
+			var _p4 = msg;
+			switch (_p4.ctor) {
 				case 'SetToday':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							today: _elm_lang$core$Maybe$Just(_p0._0)
+							today: _elm_lang$core$Maybe$Just(_p4._0)
 						});
 				case 'UpdateDaysFinished':
 					return _elm_lang$core$Native_Utils.update(
 						model,
-						{days_finished: _p0._0});
+						{days_finished: _p4._0});
 				case 'UpdateDaysRequired':
 					return _elm_lang$core$Native_Utils.update(
 						model,
-						{days_required: _p0._0});
+						{days_required: _p4._0});
 				case 'SkipDay':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							days_to_skip: {ctor: '::', _0: _p0._0, _1: model.days_to_skip}
+							days_to_skip: {ctor: '::', _0: _p4._0, _1: model.days_to_skip}
 						});
 				default:
 					return _elm_lang$core$Native_Utils.update(
@@ -8774,7 +8844,7 @@ var _user$project$Main$update = F2(
 							days_to_skip: A2(
 								_elm_lang$core$List$filter,
 								function (d) {
-									return !_elm_lang$core$Native_Utils.eq(d, _p0._0);
+									return !_elm_lang$core$Native_Utils.eq(d, _p4._0);
 								},
 								model.days_to_skip)
 						});
@@ -8817,8 +8887,8 @@ var _user$project$Main$configView = function (model) {
 				});
 		});
 	var configError = function (val) {
-		var _p1 = val;
-		if (_p1.ctor === 'Ok') {
+		var _p5 = val;
+		if (_p5.ctor === 'Ok') {
 			return _elm_lang$html$Html$text('');
 		} else {
 			return A2(
@@ -8830,14 +8900,14 @@ var _user$project$Main$configView = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(_p1._0),
+					_0: _elm_lang$html$Html$text(_p5._0),
 					_1: {ctor: '[]'}
 				});
 		}
 	};
 	var configLine = F3(
-		function (prompt, _p2, mkmsg) {
-			var _p3 = _p2;
+		function (prompt, _p6, mkmsg) {
+			var _p7 = _p6;
 			return A2(
 				_elm_lang$html$Html$tr,
 				{ctor: '[]'},
@@ -8866,7 +8936,7 @@ var _user$project$Main$configView = function (model) {
 											updateConfig(mkmsg)),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$value(_p3._0),
+											_0: _elm_lang$html$Html_Attributes$value(_p7._0),
 											_1: {ctor: '[]'}
 										}
 									},
@@ -8880,7 +8950,7 @@ var _user$project$Main$configView = function (model) {
 								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: configError(_p3._1),
+									_0: configError(_p7._1),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}

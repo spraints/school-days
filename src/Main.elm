@@ -5,6 +5,7 @@ import Html
 import Html.Attributes
 import Html.Events
 import Task exposing (perform)
+import Time exposing (hour)
 
 type alias ParsedInt = Result String Int
 
@@ -93,4 +94,23 @@ configView model =
 
 calendarView : Model -> Html.Html Msg
 calendarView model =
-  Html.text <| toString model.today
+  let
+    addDay date =
+      Date.fromTime <| 24 * hour + (Date.toTime date)
+    calendarFor res date year n =
+      if year /= Date.year date then
+        res
+      else
+        calendarFor (res ++ [Html.div [] [ Html.text <| (toString date) ++ ": #" ++ (toString n) ]]) (addDay date) year (n + 1)
+    calendarStartingAt today =
+      calendarFor [] today (Date.year today) ((alwaysInt model.days_finished) + 1)
+  in
+    case model.today of
+      Just today -> Html.div [] <| calendarStartingAt today
+      Nothing -> Html.text "don't know what today is :("
+
+alwaysInt : (String, ParsedInt) -> Int
+alwaysInt (_, res) =
+  case res of
+    Err _ -> 0
+    Ok n -> n
