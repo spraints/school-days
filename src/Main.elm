@@ -66,19 +66,21 @@ update msg model =
 
 view : Model -> Html.Html Msg
 view model =
-  Html.div []
+  Html.div [ Html.Attributes.class "container" ]
+  [ Html.div []
     [ configView model
     , calendarView model
     ]
+  ]
 
 configView : Model -> Html.Html Msg
 configView model =
   let
     configLine prompt (s, val) mkmsg =
-      Html.tr []
-        [ Html.td [] [ Html.text prompt ]
-        , Html.td [] [ Html.input [ Html.Events.onInput <| updateConfig mkmsg, Html.Attributes.value s ] [] ]
-        , Html.td [] [ configError val ]
+      Html.div [ Html.Attributes.class "row" ]
+        [ Html.div [ Html.Attributes.class "col-2" ] [ Html.text prompt ]
+        , Html.div [ Html.Attributes.class "col-2" ] [ Html.input [ Html.Events.onInput <| updateConfig mkmsg, Html.Attributes.value s ] [] ]
+        , Html.div [ Html.Attributes.class "col-2" ] [ configError val ]
         ]
     configError val =
       case val of
@@ -87,7 +89,7 @@ configView model =
     updateConfig mkmsg s =
       mkmsg (s, String.toInt s)
   in
-    Html.table []
+    Html.div []
       [ configLine "Days Finished" model.days_finished UpdateDaysFinished
       , configLine "Days Required" model.days_required UpdateDaysRequired
       ]

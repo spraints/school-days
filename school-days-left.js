@@ -9038,13 +9038,21 @@ var _user$project$Main$configView = function (model) {
 		function (prompt, _p7, mkmsg) {
 			var _p8 = _p7;
 			return A2(
-				_elm_lang$html$Html$tr,
-				{ctor: '[]'},
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('row'),
+					_1: {ctor: '[]'}
+				},
 				{
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$td,
-						{ctor: '[]'},
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('col-2'),
+							_1: {ctor: '[]'}
+						},
 						{
 							ctor: '::',
 							_0: _elm_lang$html$Html$text(prompt),
@@ -9053,8 +9061,12 @@ var _user$project$Main$configView = function (model) {
 					_1: {
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$td,
-							{ctor: '[]'},
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('col-2'),
+								_1: {ctor: '[]'}
+							},
 							{
 								ctor: '::',
 								_0: A2(
@@ -9075,8 +9087,12 @@ var _user$project$Main$configView = function (model) {
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$td,
-								{ctor: '[]'},
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('col-2'),
+									_1: {ctor: '[]'}
+								},
 								{
 									ctor: '::',
 									_0: configError(_p8._1),
@@ -9088,7 +9104,7 @@ var _user$project$Main$configView = function (model) {
 				});
 		});
 	return A2(
-		_elm_lang$html$Html$table,
+		_elm_lang$html$Html$div,
 		{ctor: '[]'},
 		{
 			ctor: '::',
@@ -9103,15 +9119,26 @@ var _user$project$Main$configView = function (model) {
 var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _user$project$Main$configView(model),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Main$calendarView(model),
-				_1: {ctor: '[]'}
-			}
+			_0: _elm_lang$html$Html_Attributes$class('container'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _user$project$Main$configView(model),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Main$calendarView(model),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
 		});
 };
 var _user$project$Main$SetToday = function (a) {
