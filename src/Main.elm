@@ -96,6 +96,20 @@ configView model =
 
 calendarView : Model -> Html.Html Msg
 calendarView model =
+  Html.div [] [ ycalendarView model, xcalendarView model ]
+
+ycalendarView : Model -> Html.Html Msg
+ycalendarView model =
+  -- todo:
+  -- * transform model so that it:
+  --  (1) starts on Sunday
+  --  (2) has the day numbers in the struct, and any other info for drawing
+  --  (3) splits up months (?)
+  -- * render as bootstrap rows
+  Html.div [] []
+
+xcalendarView : Model -> Html.Html Msg
+xcalendarView model =
   let
     addDay date =
       Date.fromTime <| 24 * hour + (Date.toTime date)

@@ -8747,6 +8747,12 @@ var _user$project$Main$alwaysInt = function (_p0) {
 		return _p2._0;
 	}
 };
+var _user$project$Main$ycalendarView = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{ctor: '[]'});
+};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var updated_model = function () {
@@ -8805,7 +8811,7 @@ var _user$project$Main$UnskipDay = function (a) {
 var _user$project$Main$SkipDay = function (a) {
 	return {ctor: 'SkipDay', _0: a};
 };
-var _user$project$Main$calendarView = function (model) {
+var _user$project$Main$xcalendarView = function (model) {
 	var skippableDayView = F3(
 		function (date, desc, act) {
 			return {
@@ -8998,6 +9004,20 @@ var _user$project$Main$calendarView = function (model) {
 	} else {
 		return _elm_lang$html$Html$text('don\'t know what today is :(');
 	}
+};
+var _user$project$Main$calendarView = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Main$ycalendarView(model),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Main$xcalendarView(model),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _user$project$Main$UpdateDaysRequired = function (a) {
 	return {ctor: 'UpdateDaysRequired', _0: a};
