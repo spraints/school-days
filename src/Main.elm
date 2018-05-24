@@ -7,6 +7,8 @@ import Html.Events
 import Task exposing (perform)
 import Time exposing (hour)
 
+import Debug
+
 type alias ParsedInt = Result String Int
 
 type Msg = SetToday Date
@@ -106,14 +108,34 @@ ycalendarView model =
   --  (2) has the day numbers in the struct, and any other info for drawing
   --  (3) splits up months (?)
   -- * render as bootstrap rows
-  Html.div [] []
+  let
+    allTheDays = makeCalendar model
+  in
+    Html.div [] <|
+      Debug.log (toString allTheDays) []
+
+type alias Calendar = List Month
+type alias Month = { name : String, days : List Day }
+type alias Day = { date : Date, school : Bool }
+
+makeCalendar : Model -> Calendar
+makeCalendar model =
+  let
+    days year day model res =
+      if Date.year day /= year then
+        res
+      else
+        res |>
+          days year (addDay day) model
+  in
+    case model.today of
+      Nothing -> []
+      Just today ->
+        [{name = "todo", days = days (Date.year today) today model []}]
 
 xcalendarView : Model -> Html.Html Msg
 xcalendarView model =
   let
-    addDay date =
-      Date.fromTime <| 24 * hour + (Date.toTime date)
-
     isWeekend date =
       case Date.dayOfWeek date of
         Date.Mon -> False
@@ -145,6 +167,9 @@ xcalendarView model =
     case model.today of
       Just today -> Html.table [] <| calendarStartingAt today
       Nothing -> Html.text "don't know what today is :("
+
+addDay date =
+  Date.fromTime <| 24 * hour + (Date.toTime date)
 
 alwaysInt : (String, ParsedInt) -> Int
 alwaysInt (_, res) =
