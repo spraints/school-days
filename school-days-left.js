@@ -9182,14 +9182,22 @@ var _user$project$Main$makeCalendar = function (model) {
 				skipped: model.days_to_skip
 			};
 		});
-	var nextDayInfo = function (info) {
-		return _elm_lang$core$Native_Utils.update(
-			info,
-			{
-				date: _user$project$Main$addDay(info.date),
-				completed: info.completed + (isSchoolDay(info) ? 1 : 0)
-			});
-	};
+	var nextDayInfo = F2(
+		function (info, d) {
+			return _elm_lang$core$Native_Utils.update(
+				info,
+				{
+					date: _user$project$Main$addDay(info.date),
+					completed: function () {
+						var _p9 = d.what;
+						if (_p9.ctor === 'NoSchool') {
+							return info.completed;
+						} else {
+							return _p9._0;
+						}
+					}()
+				});
+		});
 	var makeDays = F3(
 		function (currentYear, info, res) {
 			makeDays:
@@ -9199,33 +9207,30 @@ var _user$project$Main$makeCalendar = function (model) {
 					currentYear)) {
 					return _elm_lang$core$List$reverse(res);
 				} else {
-					var _v19 = currentYear,
-						_v20 = nextDayInfo(info),
-						_v21 = {
-						ctor: '::',
-						_0: makeDay(info),
-						_1: res
-					};
-					currentYear = _v19;
-					info = _v20;
-					res = _v21;
+					var d = makeDay(info);
+					var _v20 = currentYear,
+						_v21 = A2(nextDayInfo, info, d),
+						_v22 = {ctor: '::', _0: d, _1: res};
+					currentYear = _v20;
+					info = _v21;
+					res = _v22;
 					continue makeDays;
 				}
 			}
 		});
-	var _p9 = model.today;
-	if (_p9.ctor === 'Nothing') {
+	var _p10 = model.today;
+	if (_p10.ctor === 'Nothing') {
 		return {ctor: '[]'};
 	} else {
-		var _p10 = _p9._0;
+		var _p11 = _p10._0;
 		return {
 			ctor: '::',
 			_0: {
 				name: 'todo',
 				days: A3(
 					makeDays,
-					_elm_lang$core$Date$year(_p10),
-					A2(firstDayInfo, _p10, model),
+					_elm_lang$core$Date$year(_p11),
+					A2(firstDayInfo, _p11, model),
 					{ctor: '[]'})
 			},
 			_1: {ctor: '[]'}

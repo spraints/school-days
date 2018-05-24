@@ -131,13 +131,18 @@ makeCalendar model =
       if Date.year info.date /= currentYear then
         reverse res
       else
-        (makeDay info) :: res |>
-          makeDays currentYear (nextDayInfo info)
+        let
+          d = makeDay info
+        in
+          makeDays currentYear (nextDayInfo info d) (d :: res)
 
-    nextDayInfo info =
+    nextDayInfo info d =
       { info
       | date = addDay info.date
-      , completed = info.completed + if isSchoolDay info then 1 else 0
+      , completed =
+          case d.what of
+            NoSchool -> info.completed
+            School n -> n
       }
     firstDayInfo today model =
       { date = today
