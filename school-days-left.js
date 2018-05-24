@@ -8747,86 +8747,53 @@ var _user$project$Main$alwaysInt = function (_p0) {
 		return _p2._0;
 	}
 };
+var _user$project$Main$isWeekend = function (date) {
+	var _p3 = _elm_lang$core$Date$dayOfWeek(date);
+	switch (_p3.ctor) {
+		case 'Mon':
+			return false;
+		case 'Tue':
+			return false;
+		case 'Wed':
+			return false;
+		case 'Thu':
+			return false;
+		case 'Fri':
+			return false;
+		case 'Sat':
+			return true;
+		default:
+			return true;
+	}
+};
 var _user$project$Main$addDay = function (date) {
 	return _elm_lang$core$Date$fromTime(
 		(24 * _elm_lang$core$Time$hour) + _elm_lang$core$Date$toTime(date));
 };
-var _user$project$Main$makeCalendar = function (model) {
-	var days = F4(
-		function (year, day, model, res) {
-			days:
-			while (true) {
-				if (!_elm_lang$core$Native_Utils.eq(
-					_elm_lang$core$Date$year(day),
-					year)) {
-					return res;
-				} else {
-					var _v2 = year,
-						_v3 = _user$project$Main$addDay(day),
-						_v4 = model,
-						_v5 = res;
-					year = _v2;
-					day = _v3;
-					model = _v4;
-					res = _v5;
-					continue days;
-				}
-			}
-		});
-	var _p3 = model.today;
-	if (_p3.ctor === 'Nothing') {
-		return {ctor: '[]'};
-	} else {
-		var _p4 = _p3._0;
-		return {
-			ctor: '::',
-			_0: {
-				name: 'todo',
-				days: A4(
-					days,
-					_elm_lang$core$Date$year(_p4),
-					_p4,
-					model,
-					{ctor: '[]'})
-			},
-			_1: {ctor: '[]'}
-		};
-	}
-};
-var _user$project$Main$ycalendarView = function (model) {
-	var allTheDays = _user$project$Main$makeCalendar(model);
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		A2(
-			_elm_lang$core$Debug$log,
-			_elm_lang$core$Basics$toString(allTheDays),
-			{ctor: '[]'}));
-};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var updated_model = function () {
-			var _p5 = msg;
-			switch (_p5.ctor) {
+			var _p4 = msg;
+			switch (_p4.ctor) {
 				case 'SetToday':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							today: _elm_lang$core$Maybe$Just(_p5._0)
+							today: _elm_lang$core$Maybe$Just(_p4._0)
 						});
 				case 'UpdateDaysFinished':
 					return _elm_lang$core$Native_Utils.update(
 						model,
-						{days_finished: _p5._0});
+						{days_finished: _p4._0});
 				case 'UpdateDaysRequired':
 					return _elm_lang$core$Native_Utils.update(
 						model,
-						{days_required: _p5._0});
+						{days_required: _p4._0});
 				case 'SkipDay':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							days_to_skip: {ctor: '::', _0: _p5._0, _1: model.days_to_skip}
+							days_to_skip: {ctor: '::', _0: _p4._0, _1: model.days_to_skip}
 						});
 				default:
 					return _elm_lang$core$Native_Utils.update(
@@ -8835,7 +8802,7 @@ var _user$project$Main$update = F2(
 							days_to_skip: A2(
 								_elm_lang$core$List$filter,
 								function (d) {
-									return !_elm_lang$core$Native_Utils.eq(d, _p5._0);
+									return !_elm_lang$core$Native_Utils.eq(d, _p4._0);
 								},
 								model.days_to_skip)
 						});
@@ -8861,7 +8828,7 @@ var _user$project$Main$Month = F2(
 	});
 var _user$project$Main$Day = F2(
 	function (a, b) {
-		return {date: a, school: b};
+		return {date: a, what: b};
 	});
 var _user$project$Main$UnskipDay = function (a) {
 	return {ctor: 'UnskipDay', _0: a};
@@ -8961,25 +8928,6 @@ var _user$project$Main$xcalendarView = function (model) {
 				_1: {ctor: '[]'}
 			};
 		});
-	var isWeekend = function (date) {
-		var _p6 = _elm_lang$core$Date$dayOfWeek(date);
-		switch (_p6.ctor) {
-			case 'Mon':
-				return false;
-			case 'Tue':
-				return false;
-			case 'Wed':
-				return false;
-			case 'Thu':
-				return false;
-			case 'Fri':
-				return false;
-			case 'Sat':
-				return true;
-			default:
-				return true;
-		}
-	};
 	var calendarFor = F4(
 		function (res, date, year, n) {
 			calendarFor:
@@ -8989,35 +8937,35 @@ var _user$project$Main$xcalendarView = function (model) {
 					_elm_lang$core$Date$year(date))) {
 					return res;
 				} else {
-					if (isWeekend(date)) {
-						var _v9 = A2(
+					if (_user$project$Main$isWeekend(date)) {
+						var _v4 = A2(
 							_elm_lang$core$Basics_ops['++'],
 							res,
 							A2(calendarDayView, date, 'no school')),
-							_v10 = _user$project$Main$addDay(date),
-							_v11 = year,
-							_v12 = n;
-						res = _v9;
-						date = _v10;
-						year = _v11;
-						n = _v12;
+							_v5 = _user$project$Main$addDay(date),
+							_v6 = year,
+							_v7 = n;
+						res = _v4;
+						date = _v5;
+						year = _v6;
+						n = _v7;
 						continue calendarFor;
 					} else {
 						if (A2(_elm_lang$core$List$member, date, model.days_to_skip)) {
-							var _v13 = A2(
+							var _v8 = A2(
 								_elm_lang$core$Basics_ops['++'],
 								res,
 								A3(skippableDayView, date, 'skipped', _user$project$Main$UnskipDay)),
-								_v14 = _user$project$Main$addDay(date),
-								_v15 = year,
-								_v16 = n;
-							res = _v13;
-							date = _v14;
-							year = _v15;
-							n = _v16;
+								_v9 = _user$project$Main$addDay(date),
+								_v10 = year,
+								_v11 = n;
+							res = _v8;
+							date = _v9;
+							year = _v10;
+							n = _v11;
 							continue calendarFor;
 						} else {
-							var _v17 = A2(
+							var _v12 = A2(
 								_elm_lang$core$Basics_ops['++'],
 								res,
 								A3(
@@ -9028,13 +8976,13 @@ var _user$project$Main$xcalendarView = function (model) {
 										'#',
 										_elm_lang$core$Basics$toString(n)),
 									_user$project$Main$SkipDay)),
-								_v18 = _user$project$Main$addDay(date),
-								_v19 = year,
-								_v20 = n + 1;
-							res = _v17;
-							date = _v18;
-							year = _v19;
-							n = _v20;
+								_v13 = _user$project$Main$addDay(date),
+								_v14 = year,
+								_v15 = n + 1;
+							res = _v12;
+							date = _v13;
+							year = _v14;
+							n = _v15;
 							continue calendarFor;
 						}
 					}
@@ -9049,29 +8997,15 @@ var _user$project$Main$xcalendarView = function (model) {
 			_elm_lang$core$Date$year(today),
 			_user$project$Main$alwaysInt(model.days_finished) + 1);
 	};
-	var _p7 = model.today;
-	if (_p7.ctor === 'Just') {
+	var _p5 = model.today;
+	if (_p5.ctor === 'Just') {
 		return A2(
 			_elm_lang$html$Html$table,
 			{ctor: '[]'},
-			calendarStartingAt(_p7._0));
+			calendarStartingAt(_p5._0));
 	} else {
 		return _elm_lang$html$Html$text('don\'t know what today is :(');
 	}
-};
-var _user$project$Main$calendarView = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _user$project$Main$ycalendarView(model),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Main$xcalendarView(model),
-				_1: {ctor: '[]'}
-			}
-		});
 };
 var _user$project$Main$UpdateDaysRequired = function (a) {
 	return {ctor: 'UpdateDaysRequired', _0: a};
@@ -9090,8 +9024,8 @@ var _user$project$Main$configView = function (model) {
 				});
 		});
 	var configError = function (val) {
-		var _p8 = val;
-		if (_p8.ctor === 'Ok') {
+		var _p6 = val;
+		if (_p6.ctor === 'Ok') {
 			return _elm_lang$html$Html$text('');
 		} else {
 			return A2(
@@ -9103,14 +9037,14 @@ var _user$project$Main$configView = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(_p8._0),
+					_0: _elm_lang$html$Html$text(_p6._0),
 					_1: {ctor: '[]'}
 				});
 		}
 	};
 	var configLine = F3(
-		function (prompt, _p9, mkmsg) {
-			var _p10 = _p9;
+		function (prompt, _p7, mkmsg) {
+			var _p8 = _p7;
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -9151,7 +9085,7 @@ var _user$project$Main$configView = function (model) {
 											updateConfig(mkmsg)),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$value(_p10._0),
+											_0: _elm_lang$html$Html_Attributes$value(_p8._0),
 											_1: {ctor: '[]'}
 										}
 									},
@@ -9169,7 +9103,7 @@ var _user$project$Main$configView = function (model) {
 								},
 								{
 									ctor: '::',
-									_0: configError(_p10._1),
+									_0: configError(_p8._1),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
@@ -9188,31 +9122,6 @@ var _user$project$Main$configView = function (model) {
 				_0: A3(configLine, 'Days Required', model.days_required, _user$project$Main$UpdateDaysRequired),
 				_1: {ctor: '[]'}
 			}
-		});
-};
-var _user$project$Main$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('container'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: _user$project$Main$configView(model),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Main$calendarView(model),
-						_1: {ctor: '[]'}
-					}
-				}),
-			_1: {ctor: '[]'}
 		});
 };
 var _user$project$Main$SetToday = function (a) {
@@ -9248,6 +9157,127 @@ var _user$project$Main$init = function () {
 		_1: _elm_lang$core$Platform_Cmd$batch(initialActions)
 	};
 }();
+var _user$project$Main$School = function (a) {
+	return {ctor: 'School', _0: a};
+};
+var _user$project$Main$NoSchool = {ctor: 'NoSchool'};
+var _user$project$Main$makeCalendar = function (model) {
+	var isSchoolDay = function (info) {
+		return _user$project$Main$isWeekend(info.date) ? false : true;
+	};
+	var whatIs = function (info) {
+		return isSchoolDay(info) ? _user$project$Main$School(info.completed + 1) : _user$project$Main$NoSchool;
+	};
+	var makeDay = function (info) {
+		return {
+			date: info.date,
+			what: whatIs(info)
+		};
+	};
+	var firstDayInfo = F2(
+		function (today, model) {
+			return {
+				date: today,
+				completed: _user$project$Main$alwaysInt(model.days_finished)
+			};
+		});
+	var nextDayInfo = function (info) {
+		return {
+			date: _user$project$Main$addDay(info.date),
+			completed: info.completed + (isSchoolDay(info) ? 1 : 0)
+		};
+	};
+	var makeDays = F3(
+		function (currentYear, info, res) {
+			makeDays:
+			while (true) {
+				if (!_elm_lang$core$Native_Utils.eq(
+					_elm_lang$core$Date$year(info.date),
+					currentYear)) {
+					return _elm_lang$core$List$reverse(res);
+				} else {
+					var _v19 = currentYear,
+						_v20 = nextDayInfo(info),
+						_v21 = {
+						ctor: '::',
+						_0: makeDay(info),
+						_1: res
+					};
+					currentYear = _v19;
+					info = _v20;
+					res = _v21;
+					continue makeDays;
+				}
+			}
+		});
+	var _p9 = model.today;
+	if (_p9.ctor === 'Nothing') {
+		return {ctor: '[]'};
+	} else {
+		var _p10 = _p9._0;
+		return {
+			ctor: '::',
+			_0: {
+				name: 'todo',
+				days: A3(
+					makeDays,
+					_elm_lang$core$Date$year(_p10),
+					A2(firstDayInfo, _p10, model),
+					{ctor: '[]'})
+			},
+			_1: {ctor: '[]'}
+		};
+	}
+};
+var _user$project$Main$ycalendarView = function (model) {
+	var allTheDays = _user$project$Main$makeCalendar(model);
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		A2(
+			_elm_lang$core$Debug$log,
+			_elm_lang$core$Basics$toString(allTheDays),
+			{ctor: '[]'}));
+};
+var _user$project$Main$calendarView = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Main$ycalendarView(model),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Main$xcalendarView(model),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Main$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('container'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _user$project$Main$configView(model),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Main$calendarView(model),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Main$main = _elm_lang$html$Html$program(
 	{init: _user$project$Main$init, subscriptions: _user$project$Main$sub, update: _user$project$Main$update, view: _user$project$Main$view})();
 

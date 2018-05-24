@@ -4,6 +4,7 @@ import Date exposing (Date)
 import Html
 import Html.Attributes
 import Html.Events
+import List exposing (reverse)
 import Task exposing (perform)
 import Time exposing (hour)
 
@@ -116,36 +117,56 @@ ycalendarView model =
 
 type alias Calendar = List Month
 type alias Month = { name : String, days : List Day }
-type alias Day = { date : Date, school : Bool }
+type alias Day =
+  { date : Date
+  , what : TypeOfDay
+  }
+type TypeOfDay = NoSchool
+               | School Int
 
 makeCalendar : Model -> Calendar
 makeCalendar model =
   let
-    days year day model res =
-      if Date.year day /= year then
-        res
+    makeDays currentYear info res =
+      if Date.year info.date /= currentYear then
+        reverse res
       else
-        res |>
-          days year (addDay day) model
+        (makeDay info) :: res |>
+          makeDays currentYear (nextDayInfo info)
+
+    nextDayInfo info =
+      { date = addDay info.date
+      , completed = info.completed + if isSchoolDay info then 1 else 0
+      }
+    firstDayInfo today model =
+      { date = today
+      , completed = alwaysInt model.days_finished
+      }
+
+    makeDay info =
+      { date = info.date
+      , what = whatIs info
+      }
+    whatIs info =
+      if isSchoolDay info then
+        School <| info.completed + 1
+      else
+        NoSchool
+
+    isSchoolDay info =
+      if isWeekend info.date then
+        False
+      else
+        True
   in
     case model.today of
       Nothing -> []
       Just today ->
-        [{name = "todo", days = days (Date.year today) today model []}]
+        [{name = "todo", days = makeDays (Date.year today) (firstDayInfo today model) []}]
 
 xcalendarView : Model -> Html.Html Msg
 xcalendarView model =
   let
-    isWeekend date =
-      case Date.dayOfWeek date of
-        Date.Mon -> False
-        Date.Tue -> False
-        Date.Wed -> False
-        Date.Thu -> False
-        Date.Fri -> False
-        Date.Sat -> True
-        Date.Sun -> True
-
     calendarFor res date year n =
       if year /= Date.year date then
         res
@@ -170,6 +191,16 @@ xcalendarView model =
 
 addDay date =
   Date.fromTime <| 24 * hour + (Date.toTime date)
+
+isWeekend date =
+  case Date.dayOfWeek date of
+    Date.Mon -> False
+    Date.Tue -> False
+    Date.Wed -> False
+    Date.Thu -> False
+    Date.Fri -> False
+    Date.Sat -> True
+    Date.Sun -> True
 
 alwaysInt : (String, ParsedInt) -> Int
 alwaysInt (_, res) =
