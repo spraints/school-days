@@ -135,12 +135,14 @@ makeCalendar model =
           makeDays currentYear (nextDayInfo info)
 
     nextDayInfo info =
-      { date = addDay info.date
+      { info
+      | date = addDay info.date
       , completed = info.completed + if isSchoolDay info then 1 else 0
       }
     firstDayInfo today model =
       { date = today
       , completed = alwaysInt model.days_finished
+      , skipped = model.days_to_skip
       }
 
     makeDay info =
@@ -155,6 +157,8 @@ makeCalendar model =
 
     isSchoolDay info =
       if isWeekend info.date then
+        False
+      else if List.member info.date model.days_to_skip then
         False
       else
         True

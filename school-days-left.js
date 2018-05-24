@@ -9163,7 +9163,7 @@ var _user$project$Main$School = function (a) {
 var _user$project$Main$NoSchool = {ctor: 'NoSchool'};
 var _user$project$Main$makeCalendar = function (model) {
 	var isSchoolDay = function (info) {
-		return _user$project$Main$isWeekend(info.date) ? false : true;
+		return _user$project$Main$isWeekend(info.date) ? false : (A2(_elm_lang$core$List$member, info.date, model.days_to_skip) ? false : true);
 	};
 	var whatIs = function (info) {
 		return isSchoolDay(info) ? _user$project$Main$School(info.completed + 1) : _user$project$Main$NoSchool;
@@ -9178,14 +9178,17 @@ var _user$project$Main$makeCalendar = function (model) {
 		function (today, model) {
 			return {
 				date: today,
-				completed: _user$project$Main$alwaysInt(model.days_finished)
+				completed: _user$project$Main$alwaysInt(model.days_finished),
+				skipped: model.days_to_skip
 			};
 		});
 	var nextDayInfo = function (info) {
-		return {
-			date: _user$project$Main$addDay(info.date),
-			completed: info.completed + (isSchoolDay(info) ? 1 : 0)
-		};
+		return _elm_lang$core$Native_Utils.update(
+			info,
+			{
+				date: _user$project$Main$addDay(info.date),
+				completed: info.completed + (isSchoolDay(info) ? 1 : 0)
+			});
 	};
 	var makeDays = F3(
 		function (currentYear, info, res) {
