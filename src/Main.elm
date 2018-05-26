@@ -18,6 +18,7 @@ type Msg = SetToday Date
          | UpdateDaysRequired (String, ParsedInt)
          | SkipDay Date
          | UnskipDay Date
+         | Noop
 
 type alias Model =
   { days_finished : (String, ParsedInt)
@@ -60,6 +61,7 @@ update msg model =
   let
     updated_model =
       case msg of
+        Noop -> model
         SetToday date -> { model | today = Just date }
         UpdateDaysFinished n -> { model | days_finished = n } -- todo put this in the url?
         UpdateDaysRequired n -> { model | days_required = n }
@@ -105,11 +107,9 @@ calendarView model =
 ycalendarView : Model -> Html.Html Msg
 ycalendarView model =
   -- todo:
-  -- * transform model so that it:
-  --  (1) starts on Sunday
-  --  (2) has the day numbers in the struct, and any other info for drawing
-  --  (3) splits up months (?)
-  -- * render as bootstrap rows
+  -- [x] click day to skip
+  -- [ ] click week to skip
+  -- [ ] use query string for data
   let
     months = makeCalendar model
   in
@@ -153,8 +153,13 @@ renderWeek days =
         School n -> (toString n) ++ " days"
         NoSchool -> "(skip)"
         Weekend -> ""
+    act day =
+      case day.what of
+        School _ -> SkipDay day.date
+        NoSchool -> UnskipDay day.date
+        Weekend -> Noop
     htmlDay day =
-      Html.div [ Html.Attributes.class ("col-1 day " ++ (whatClass day)) ]
+      Html.div [ Html.Events.onClick (act day), Html.Attributes.class ("col-1 day " ++ (whatClass day)) ]
         [ Html.h6 [ Html.Attributes.class "day-number" ] [ Html.text <| toString <| Date.day day.date ]
         , Html.text <| dayDesc day
         ]
