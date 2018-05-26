@@ -4,7 +4,8 @@ import Date exposing (Date)
 import Html
 import Html.Attributes
 import Html.Events
-import List exposing (reverse)
+import List exposing (head, reverse, tail)
+import Maybe exposing (withDefault)
 import Task exposing (perform)
 import Time exposing (hour)
 
@@ -116,7 +117,7 @@ ycalendarView model =
       Debug.log (toString allTheDays) []
 
 type alias Calendar = List Month
-type alias Month = { name : String, days : List Day }
+type alias Month = { month : Date.Month, days : List Day }
 type alias Day =
   { date : Date
   , what : TypeOfDay
@@ -127,14 +128,15 @@ type TypeOfDay = NoSchool
 makeCalendar : Model -> Calendar
 makeCalendar model =
   let
-    makeDays currentYear info res =
+    makeDays = makeDaysRec []
+    makeDaysRec res currentYear info =
       if Date.year info.date /= currentYear then
         reverse res
       else
         let
           d = makeDay info
         in
-          makeDays currentYear (nextDayInfo info d) (d :: res)
+          makeDaysRec (d :: res) currentYear (nextDayInfo info d)
 
     nextDayInfo info d =
       { info
@@ -167,11 +169,30 @@ makeCalendar model =
         False
       else
         True
+
+    startMonth info =
+      { month = Date.month info.date
+      , days = [info]
+      }
+
+    aggMonth info res =
+      case uncons res of
+        Nothing -> [startMonth info]
+        Just (month, rest) ->
+          if month.month == Date.month info.date then
+            {month | days = info :: month.days} :: rest
+          else
+            (startMonth info) :: res
+
+    splitMonths =
+      List.foldr aggMonth []
   in
     case model.today of
       Nothing -> []
       Just today ->
-        [{name = "todo", days = makeDays (Date.year today) (firstDayInfo today model) []}]
+        firstDayInfo today model
+          |> makeDays (Date.year today)
+          |> splitMonths
 
 xcalendarView : Model -> Html.Html Msg
 xcalendarView model =
@@ -216,3 +237,10 @@ alwaysInt (_, res) =
   case res of
     Err _ -> 0
     Ok n -> n
+
+uncons : List a -> Maybe (a, List a)
+uncons list =
+  case head list of
+    Nothing -> Nothing
+    Just x ->
+      Just (x, tail list |> withDefault [])
