@@ -213,8 +213,10 @@ makeCalendar model =
         Weekend
       else if List.member info.date model.days_to_skip then
         NoSchool
-      else
+      else if info.completed < (alwaysInt model.days_required) then
         School <| info.completed + 1
+      else
+        Weekend
 
     startMonth info =
       { month = Date.month info.date
