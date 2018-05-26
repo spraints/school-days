@@ -111,10 +111,28 @@ ycalendarView model =
   --  (3) splits up months (?)
   -- * render as bootstrap rows
   let
-    allTheDays = makeCalendar model
+    months = makeCalendar model
   in
     Html.div [] <|
-      Debug.log (toString allTheDays) []
+      List.map renderMonth months
+
+renderMonth : Month -> Html.Html Msg
+renderMonth month =
+  let
+    notSunday info _ = Date.Sat /= Date.dayOfWeek info.date
+  in
+    groupWhile notSunday month.days
+      |> List.map renderWeek
+      |> (::) (Html.h2 [ Html.Attributes.class "month-name" ] [ Html.text (toString month.month) ])
+      |> Html.div [ Html.Attributes.class "month" ]
+
+renderWeek : List Day -> Html.Html Msg
+renderWeek days =
+  Html.div [] [ Html.text <| toString days ]
+
+groupByWeek : List Day -> List (List Day)
+groupByWeek days =
+  []
 
 type alias Calendar = List Month
 type alias Month = { month : Date.Month, days : List Day }
@@ -238,9 +256,28 @@ alwaysInt (_, res) =
     Err _ -> 0
     Ok n -> n
 
+-- exactly like
+-- https://github.com/elm-community/list-extra/blob/36b63fc2ab1b1b602a30dbc71e9b829a0f325e21/src/List/Extra.elm#L285-L298
 uncons : List a -> Maybe (a, List a)
 uncons list =
-  case head list of
-    Nothing -> Nothing
-    Just x ->
-      Just (x, tail list |> withDefault [])
+  case list of
+    [] -> Nothing
+    x :: xs -> Just ( x, xs )
+
+-- kind of inspired by
+-- https://github.com/elm-community/list-extra/blob/36b63fc2ab1b1b602a30dbc71e9b829a0f325e21/src/List/Extra.elm#L1302-L1328
+groupWhile : (a -> a -> Bool) -> List a -> List (List a)
+groupWhile keepGrouping xs =
+  let
+    prepend x (cur, rest) =
+      case head cur of
+        Nothing -> ([x], rest)
+        Just y ->
+          if keepGrouping x y then
+            (x :: cur, rest)
+          else
+            ([x], cur :: rest)
+  in
+    case List.foldr prepend ([], []) xs of
+      ([], res) -> res
+      (cur, res) -> cur :: res
