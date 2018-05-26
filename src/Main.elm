@@ -19,6 +19,8 @@ type Msg = SetToday Date
          | UpdateDaysRequired (String, ParsedInt)
          | SkipDay Date
          | UnskipDay Date
+         | SkipDays (List Date)
+         | UnskipDays (List Date)
          | Noop
 
 type alias Model =
@@ -68,6 +70,8 @@ update msg model =
         UpdateDaysRequired n -> { model | days_required = n }
         SkipDay date -> { model | days_to_skip = Set.insert (toComparableDate date) model.days_to_skip }
         UnskipDay date -> { model | days_to_skip = Set.remove (toComparableDate date) model.days_to_skip }
+        SkipDays dates -> { model | days_to_skip = Set.union model.days_to_skip <| Set.fromList <| List.map toComparableDate dates }
+        UnskipDays dates -> { model | days_to_skip = Set.diff model.days_to_skip <| Set.fromList <| List.map toComparableDate dates }
   in
     (updated_model, Cmd.none)
 
@@ -105,8 +109,8 @@ calendarView : Model -> Html.Html Msg
 calendarView model =
   -- todo:
   -- [x] click day to skip
-  -- [ ] click week to skip
-  -- [ ] use query string for data
+  -- [x] click week to skip
+  -- [ ] use query string or local storage for data
   let
     months = makeCalendar model
   in
@@ -161,8 +165,20 @@ renderWeek days =
         , Html.text <| dayDesc day
         ]
     htmlDays = List.map htmlDay days
+
+    weekAct act label =
+      Html.span
+        [ Html.Attributes.class "week-action"
+        , Html.Events.onClick <| act <| List.map .date days
+        ]
+        [ Html.text label ]
+    weekActs =
+      Html.div [ Html.Attributes.class "col-1 week-actions" ]
+        [ weekAct SkipDays "NO"
+        , weekAct UnskipDays "YES"
+        ]
   in
-    pad ++ htmlDays |> Html.div [ Html.Attributes.class "row" ]
+    [weekActs] ++ pad ++ htmlDays |> Html.div [ Html.Attributes.class "row" ]
 
 groupByWeek : List Day -> List (List Day)
 groupByWeek days =

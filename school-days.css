@@ -5,3 +5,9 @@
 .day.school {
   background-color: green;
 }
+
+.week-action {
+  margin: 2px;
+  text-decoration: underline;
+  color: #00f
+}

@@ -9034,7 +9034,7 @@ var _user$project$Main$update = F2(
 								_user$project$Main$toComparableDate(_p12._0),
 								model.days_to_skip)
 						});
-				default:
+				case 'UnskipDay':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
@@ -9042,6 +9042,26 @@ var _user$project$Main$update = F2(
 								_elm_lang$core$Set$remove,
 								_user$project$Main$toComparableDate(_p12._0),
 								model.days_to_skip)
+						});
+				case 'SkipDays':
+					return _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							days_to_skip: A2(
+								_elm_lang$core$Set$union,
+								model.days_to_skip,
+								_elm_lang$core$Set$fromList(
+									A2(_elm_lang$core$List$map, _user$project$Main$toComparableDate, _p12._0)))
+						});
+				default:
+					return _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							days_to_skip: A2(
+								_elm_lang$core$Set$diff,
+								model.days_to_skip,
+								_elm_lang$core$Set$fromList(
+									A2(_elm_lang$core$List$map, _user$project$Main$toComparableDate, _p12._0)))
 						});
 			}
 		}();
@@ -9068,6 +9088,12 @@ var _user$project$Main$Day = F2(
 		return {date: a, what: b};
 	});
 var _user$project$Main$Noop = {ctor: 'Noop'};
+var _user$project$Main$UnskipDays = function (a) {
+	return {ctor: 'UnskipDays', _0: a};
+};
+var _user$project$Main$SkipDays = function (a) {
+	return {ctor: 'SkipDays', _0: a};
+};
 var _user$project$Main$UnskipDay = function (a) {
 	return {ctor: 'UnskipDay', _0: a};
 };
@@ -9075,6 +9101,48 @@ var _user$project$Main$SkipDay = function (a) {
 	return {ctor: 'SkipDay', _0: a};
 };
 var _user$project$Main$renderWeek = function (days) {
+	var weekAct = F2(
+		function (act, label) {
+			return A2(
+				_elm_lang$html$Html$span,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('week-action'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							act(
+								A2(
+									_elm_lang$core$List$map,
+									function (_) {
+										return _.date;
+									},
+									days))),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(label),
+					_1: {ctor: '[]'}
+				});
+		});
+	var weekActs = A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('col-1 week-actions'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(weekAct, _user$project$Main$SkipDays, 'NO'),
+			_1: {
+				ctor: '::',
+				_0: A2(weekAct, _user$project$Main$UnskipDays, 'YES'),
+				_1: {ctor: '[]'}
+			}
+		});
 	var act = function (day) {
 		var _p13 = day.what;
 		switch (_p13.ctor) {
@@ -9196,7 +9264,14 @@ var _user$project$Main$renderWeek = function (days) {
 			_0: _elm_lang$html$Html_Attributes$class('row'),
 			_1: {ctor: '[]'}
 		},
-		A2(_elm_lang$core$Basics_ops['++'], pad, htmlDays));
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: weekActs,
+				_1: {ctor: '[]'}
+			},
+			A2(_elm_lang$core$Basics_ops['++'], pad, htmlDays)));
 };
 var _user$project$Main$renderMonth = function (month) {
 	var notSunday = F2(
