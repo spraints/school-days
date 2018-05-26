@@ -1,0 +1,7 @@
+.day {
+  border: solid 1px black;
+}
+
+.day.school {
+  background-color: green;
+}

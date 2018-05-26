@@ -128,7 +128,39 @@ renderMonth month =
 
 renderWeek : List Day -> Html.Html Msg
 renderWeek days =
-  Html.div [] [ Html.text <| toString days ]
+  let
+    firstDOW =
+      case head days of
+        Nothing -> Date.Sun
+        Just firstDay -> Date.dayOfWeek firstDay.date
+    padCount =
+      case head days of
+        Nothing -> 0
+        Just day -> padCountFor day.date
+    padCountFor date =
+      case Date.dayOfWeek date of
+        Date.Sun -> 0
+        _ -> 1 + padCountFor (subDay date)
+    pad = List.repeat padCount (Html.div [ Html.Attributes.class "col-1 pad-day" ] [])
+
+    whatClass day =
+      case day.what of
+        NoSchool -> "no-school"
+        Weekend -> "no-school"
+        School _ -> "school"
+    dayDesc day =
+      case day.what of
+        School n -> (toString n) ++ " days"
+        NoSchool -> "(skip)"
+        Weekend -> ""
+    htmlDay day =
+      Html.div [ Html.Attributes.class ("col-1 day " ++ (whatClass day)) ]
+        [ Html.h6 [ Html.Attributes.class "day-number" ] [ Html.text <| toString <| Date.day day.date ]
+        , Html.text <| dayDesc day
+        ]
+    htmlDays = List.map htmlDay days
+  in
+    pad ++ htmlDays |> Html.div [ Html.Attributes.class "row" ]
 
 groupByWeek : List Day -> List (List Day)
 groupByWeek days =
@@ -141,6 +173,7 @@ type alias Day =
   , what : TypeOfDay
   }
 type TypeOfDay = NoSchool
+               | Weekend
                | School Int
 
 makeCalendar : Model -> Calendar
@@ -161,8 +194,8 @@ makeCalendar model =
       | date = addDay info.date
       , completed =
           case d.what of
-            NoSchool -> info.completed
             School n -> n
+            _ -> info.completed
       }
     firstDayInfo today model =
       { date = today
@@ -175,18 +208,12 @@ makeCalendar model =
       , what = whatIs info
       }
     whatIs info =
-      if isSchoolDay info then
-        School <| info.completed + 1
-      else
-        NoSchool
-
-    isSchoolDay info =
       if isWeekend info.date then
-        False
+        Weekend
       else if List.member info.date model.days_to_skip then
-        False
+        NoSchool
       else
-        True
+        School <| info.completed + 1
 
     startMonth info =
       { month = Date.month info.date
@@ -239,6 +266,9 @@ xcalendarView model =
 
 addDay date =
   Date.fromTime <| 24 * hour + (Date.toTime date)
+
+subDay date =
+  Date.fromTime <| (Date.toTime date) - 24 * hour
 
 isWeekend date =
   case Date.dayOfWeek date of
