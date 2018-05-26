@@ -6,6 +6,7 @@ import Html.Attributes
 import Html.Events
 import List exposing (head, reverse, tail)
 import Maybe exposing (withDefault)
+import Set exposing (Set)
 import Task exposing (perform)
 import Time exposing (hour)
 
@@ -23,7 +24,7 @@ type Msg = SetToday Date
 type alias Model =
   { days_finished : (String, ParsedInt)
   , days_required : (String, ParsedInt)
-  , days_to_skip : List Date
+  , days_to_skip : Set ComparableDate
   , today : Maybe Date
   }
 
@@ -43,7 +44,7 @@ init =
     initialModel =
       { days_finished = ("0", Ok 0)
       , days_required = ("180", Ok 180)
-      , days_to_skip = []
+      , days_to_skip = Set.empty
       , today = Nothing
       }
     initialActions =
@@ -65,8 +66,8 @@ update msg model =
         SetToday date -> { model | today = Just date }
         UpdateDaysFinished n -> { model | days_finished = n } -- todo put this in the url?
         UpdateDaysRequired n -> { model | days_required = n }
-        SkipDay date -> { model | days_to_skip = date :: model.days_to_skip }
-        UnskipDay date -> { model | days_to_skip = List.filter (\d -> d /= date) model.days_to_skip }
+        SkipDay date -> { model | days_to_skip = Set.insert (toComparableDate date) model.days_to_skip }
+        UnskipDay date -> { model | days_to_skip = Set.remove (toComparableDate date) model.days_to_skip }
   in
     (updated_model, Cmd.none)
 
@@ -211,7 +212,7 @@ makeCalendar model =
     whatIs info =
       if isWeekend info.date then
         Weekend
-      else if List.member info.date model.days_to_skip then
+      else if Set.member (toComparableDate info.date) model.days_to_skip then
         NoSchool
       else if info.completed < (alwaysInt model.days_required) then
         School <| info.completed + 1
@@ -290,3 +291,25 @@ groupWhile keepGrouping xs =
     case List.foldr prepend ([], []) xs of
       ([], res) -> res
       (cur, res) -> cur :: res
+
+type alias ComparableDate = (Int, Int, Int)
+
+toComparableDate : Date -> ComparableDate
+toComparableDate date =
+  let
+    monthNum month =
+      case month of
+        Date.Jan -> 1
+        Date.Feb -> 2
+        Date.Mar -> 3
+        Date.Apr -> 4
+        Date.May -> 5
+        Date.Jun -> 6
+        Date.Jul -> 7
+        Date.Aug -> 8
+        Date.Sep -> 9
+        Date.Oct -> 10
+        Date.Nov -> 11
+        Date.Dec -> 12
+  in
+    (Date.year date, monthNum <| Date.month date, Date.day date)
