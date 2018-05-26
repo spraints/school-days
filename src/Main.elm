@@ -102,10 +102,6 @@ configView model =
 
 calendarView : Model -> Html.Html Msg
 calendarView model =
-  Html.div [] [ ycalendarView model, xcalendarView model ]
-
-ycalendarView : Model -> Html.Html Msg
-ycalendarView model =
   -- todo:
   -- [x] click day to skip
   -- [ ] click week to skip
@@ -244,30 +240,6 @@ makeCalendar model =
           |> makeDays (Date.year today)
           |> splitMonths
 
-xcalendarView : Model -> Html.Html Msg
-xcalendarView model =
-  let
-    calendarFor res date year n =
-      if year /= Date.year date then
-        res
-      else if isWeekend date then
-        calendarFor (res ++ (calendarDayView date "no school")) (addDay date) year n
-      else if List.member date model.days_to_skip then
-        calendarFor (res ++ skippableDayView date "skipped" UnskipDay) (addDay date) year n
-      else
-        calendarFor (res ++ skippableDayView date ("#" ++ (toString n)) SkipDay) (addDay date) year (n + 1)
-
-    calendarDayView date desc =
-      [ Html.tr [] [ Html.td [] [ Html.text <| toString date ], Html.td [] [ Html.text desc ] ] ]
-    skippableDayView date desc act =
-      [ Html.tr [] [ Html.td [] [ Html.text <| toString date ], Html.td [] [ Html.text desc ], Html.td [] [ Html.button [ Html.Events.onClick (act date) ] [ Html.text "~" ] ] ] ]
-
-    calendarStartingAt today =
-      calendarFor [] today (Date.year today) ((alwaysInt model.days_finished) + 1)
-  in
-    case model.today of
-      Just today -> Html.table [] <| calendarStartingAt today
-      Nothing -> Html.text "don't know what today is :("
 
 addDay date =
   Date.fromTime <| 24 * hour + (Date.toTime date)
