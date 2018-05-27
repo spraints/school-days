@@ -2,5 +2,8 @@
   "private": true,
   "dependencies": {
     "elm": "^0.18.0"
+  },
+  "devDependencies": {
+    "bs-platform": "^3.1.4"
   }
 }
