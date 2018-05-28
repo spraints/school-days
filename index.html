@@ -15,10 +15,11 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
   -->
     <script src="school-days-left.js" type="text/javascript"></script>
+    <script src="school-days-serializer.js" type="text/javascript"></script>
     <script type="text/javascript">
-      var app = Elm.Main.fullscreen({finished: 0, required: 180, skips: [], start: null})
+      var app = Elm.Main.fullscreen(loadSchoolDays())
       app.ports.title.subscribe(title => { document.title = title });
-      app.ports.saveModel.subscribe(data => { console.log(data) })
+      app.ports.saveModel.subscribe(data => saveSchoolDays(data))
     </script>
   </body>
 </html>
