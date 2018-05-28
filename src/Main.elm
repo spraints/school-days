@@ -88,22 +88,23 @@ intAsIntInput n =
 
 adjustFinished : Model -> Date -> IntInput
 adjustFinished model newToday =
-  Debug.log ("adjustFinished: old date " ++ (toString model.today) ++ " new " ++ (toString newToday) ++ " ==> " ++ (toString <| realAdjustFinished model newToday))
-  model.days_finished
-
-realAdjustFinished : Model -> Date -> IntInput
-realAdjustFinished model newToday =
   let
-    compToday = toComparableDate newToday
-    sameDay day =
-      if Date.year day.date /= Date.year newToday then
-        False
+    compNewToday = toComparableDate newToday
+    accum day res =
+      if toComparableDate day.date < compNewToday then
+        case day.what of
+          School n -> intAsIntInput n
+          _ -> res
       else
-        toComparableDate day.date == compToday
+        res
   in
-    case List.head <| List.filter sameDay <| makeDays model of
+    case model.today of
       Nothing -> model.days_finished
-      Just day -> parseIntInput <| toString day
+      Just today ->
+        if Date.year today /= Date.year newToday then
+          intAsIntInput 0
+        else
+          List.foldl accum model.days_finished <| makeDays model
 
 flagify : Model -> Flags
 flagify model =

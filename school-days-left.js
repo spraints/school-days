@@ -9498,77 +9498,63 @@ var _user$project$Main$makeDays = function (model) {
 			A2(firstDayInfo, _p24, model));
 	}
 };
-var _user$project$Main$realAdjustFinished = F2(
-	function (model, newToday) {
-		var compToday = _user$project$Main$toComparableDate(newToday);
-		var sameDay = function (day) {
-			return (!_elm_lang$core$Native_Utils.eq(
-				_elm_lang$core$Date$year(day.date),
-				_elm_lang$core$Date$year(newToday))) ? false : _elm_lang$core$Native_Utils.eq(
-				_user$project$Main$toComparableDate(day.date),
-				compToday);
-		};
-		var _p25 = _elm_lang$core$List$head(
-			A2(
-				_elm_lang$core$List$filter,
-				sameDay,
-				_user$project$Main$makeDays(model)));
-		if (_p25.ctor === 'Nothing') {
-			return model.days_finished;
-		} else {
-			return _user$project$Main$parseIntInput(
-				_elm_lang$core$Basics$toString(_p25._0));
-		}
-	});
 var _user$project$Main$adjustFinished = F2(
 	function (model, newToday) {
-		return A2(
-			_elm_lang$core$Debug$log,
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'adjustFinished: old date ',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString(model.today),
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						' new ',
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							_elm_lang$core$Basics$toString(newToday),
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								' ==> ',
-								_elm_lang$core$Basics$toString(
-									A2(_user$project$Main$realAdjustFinished, model, newToday))))))),
-			model.days_finished);
+		var compNewToday = _user$project$Main$toComparableDate(newToday);
+		var accum = F2(
+			function (day, res) {
+				if (_elm_lang$core$Native_Utils.cmp(
+					_user$project$Main$toComparableDate(day.date),
+					compNewToday) < 0) {
+					var _p25 = day.what;
+					if (_p25.ctor === 'School') {
+						return _user$project$Main$intAsIntInput(_p25._0);
+					} else {
+						return res;
+					}
+				} else {
+					return res;
+				}
+			});
+		var _p26 = model.today;
+		if (_p26.ctor === 'Nothing') {
+			return model.days_finished;
+		} else {
+			return (!_elm_lang$core$Native_Utils.eq(
+				_elm_lang$core$Date$year(_p26._0),
+				_elm_lang$core$Date$year(newToday))) ? _user$project$Main$intAsIntInput(0) : A3(
+				_elm_lang$core$List$foldl,
+				accum,
+				model.days_finished,
+				_user$project$Main$makeDays(model));
+		}
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var updated_model = function () {
-			var _p26 = msg;
-			switch (_p26.ctor) {
+			var _p27 = msg;
+			switch (_p27.ctor) {
 				case 'Noop':
 					return model;
 				case 'SetToday':
-					var _p27 = _p26._0;
+					var _p28 = _p27._0;
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							today: _elm_lang$core$Maybe$Just(_p27),
-							days_finished: A2(_user$project$Main$adjustFinished, model, _p27)
+							today: _elm_lang$core$Maybe$Just(_p28),
+							days_finished: A2(_user$project$Main$adjustFinished, model, _p28)
 						});
 				case 'UpdateDaysFinished':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							days_finished: _user$project$Main$parseIntInput(_p26._0)
+							days_finished: _user$project$Main$parseIntInput(_p27._0)
 						});
 				case 'UpdateDaysRequired':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							days_required: _user$project$Main$parseIntInput(_p26._0)
+							days_required: _user$project$Main$parseIntInput(_p27._0)
 						});
 				case 'SkipDay':
 					return _elm_lang$core$Native_Utils.update(
@@ -9576,7 +9562,7 @@ var _user$project$Main$update = F2(
 						{
 							days_to_skip: A2(
 								_elm_lang$core$Set$insert,
-								_user$project$Main$toComparableDate(_p26._0),
+								_user$project$Main$toComparableDate(_p27._0),
 								model.days_to_skip)
 						});
 				case 'UnskipDay':
@@ -9585,7 +9571,7 @@ var _user$project$Main$update = F2(
 						{
 							days_to_skip: A2(
 								_elm_lang$core$Set$remove,
-								_user$project$Main$toComparableDate(_p26._0),
+								_user$project$Main$toComparableDate(_p27._0),
 								model.days_to_skip)
 						});
 				case 'SkipDays':
@@ -9596,7 +9582,7 @@ var _user$project$Main$update = F2(
 								_elm_lang$core$Set$union,
 								model.days_to_skip,
 								_elm_lang$core$Set$fromList(
-									A2(_elm_lang$core$List$map, _user$project$Main$toComparableDate, _p26._0)))
+									A2(_elm_lang$core$List$map, _user$project$Main$toComparableDate, _p27._0)))
 						});
 				default:
 					return _elm_lang$core$Native_Utils.update(
@@ -9606,7 +9592,7 @@ var _user$project$Main$update = F2(
 								_elm_lang$core$Set$diff,
 								model.days_to_skip,
 								_elm_lang$core$Set$fromList(
-									A2(_elm_lang$core$List$map, _user$project$Main$toComparableDate, _p26._0)))
+									A2(_elm_lang$core$List$map, _user$project$Main$toComparableDate, _p27._0)))
 						});
 			}
 		}();
@@ -9630,25 +9616,25 @@ var _user$project$Main$makeCalendar = function (model) {
 	};
 	var aggMonth = F2(
 		function (info, res) {
-			var _p28 = _user$project$Main$uncons(res);
-			if (_p28.ctor === 'Nothing') {
+			var _p29 = _user$project$Main$uncons(res);
+			if (_p29.ctor === 'Nothing') {
 				return {
 					ctor: '::',
 					_0: startMonth(info),
 					_1: {ctor: '[]'}
 				};
 			} else {
-				var _p29 = _p28._0._0;
+				var _p30 = _p29._0._0;
 				return _elm_lang$core$Native_Utils.eq(
-					_p29.month,
+					_p30.month,
 					_elm_lang$core$Date$month(info.date)) ? {
 					ctor: '::',
 					_0: _elm_lang$core$Native_Utils.update(
-						_p29,
+						_p30,
 						{
-							days: {ctor: '::', _0: info, _1: _p29.days}
+							days: {ctor: '::', _0: info, _1: _p30.days}
 						}),
-					_1: _p28._0._1
+					_1: _p29._0._1
 				} : {
 					ctor: '::',
 					_0: startMonth(info),
