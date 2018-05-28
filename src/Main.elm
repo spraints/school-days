@@ -30,9 +30,11 @@ type alias Model =
   , today : Maybe Date
   }
 
+type alias Flags = {}
+
 port title : String -> Cmd a
 
-main = Html.program
+main = Html.programWithFlags
   { init = init
   , subscriptions = sub
   , update = update
@@ -40,8 +42,8 @@ main = Html.program
   }
 
 -- days left
-init : (Model, Cmd Msg)
-init =
+init : Flags -> (Model, Cmd Msg)
+init flags =
   let
     initialModel =
       { days_finished = ("0", Ok 0)

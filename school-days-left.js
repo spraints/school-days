@@ -9079,6 +9079,7 @@ var _user$project$Main$Model = F4(
 	function (a, b, c, d) {
 		return {days_finished: a, days_required: b, days_to_skip: c, today: d};
 	});
+var _user$project$Main$Flags = {};
 var _user$project$Main$Month = F2(
 	function (a, b) {
 		return {month: a, days: b};
@@ -9430,7 +9431,7 @@ var _user$project$Main$configView = function (model) {
 var _user$project$Main$SetToday = function (a) {
 	return {ctor: 'SetToday', _0: a};
 };
-var _user$project$Main$init = function () {
+var _user$project$Main$init = function (flags) {
 	var initialActions = {
 		ctor: '::',
 		_0: _user$project$Main$title('School Days Remaining'),
@@ -9459,7 +9460,7 @@ var _user$project$Main$init = function () {
 		_0: initialModel,
 		_1: _elm_lang$core$Platform_Cmd$batch(initialActions)
 	};
-}();
+};
 var _user$project$Main$School = function (a) {
 	return {ctor: 'School', _0: a};
 };
@@ -9612,8 +9613,10 @@ var _user$project$Main$view = function (model) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Main$main = _elm_lang$html$Html$program(
-	{init: _user$project$Main$init, subscriptions: _user$project$Main$sub, update: _user$project$Main$update, view: _user$project$Main$view})();
+var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
+	{init: _user$project$Main$init, subscriptions: _user$project$Main$sub, update: _user$project$Main$update, view: _user$project$Main$view})(
+	_elm_lang$core$Json_Decode$succeed(
+		{}));
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
