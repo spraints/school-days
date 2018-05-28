@@ -9260,6 +9260,52 @@ var _user$project$Main$renderWeek = function (days) {
 			A2(_elm_lang$core$Basics_ops['++'], pad, htmlDays)));
 };
 var _user$project$Main$renderMonth = function (month) {
+	var monthNameRow = A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('row'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('col-1'),
+					_1: {ctor: '[]'}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('col-4'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$h2,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('month-name'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									_elm_lang$core$Basics$toString(month.month)),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
 	var notSunday = F2(
 		function (info, _p18) {
 			return !_elm_lang$core$Native_Utils.eq(
@@ -9278,19 +9324,7 @@ var _user$project$Main$renderMonth = function (month) {
 				function (x, y) {
 					return {ctor: '::', _0: x, _1: y};
 				}),
-			A2(
-				_elm_lang$html$Html$h2,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('month-name'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(
-						_elm_lang$core$Basics$toString(month.month)),
-					_1: {ctor: '[]'}
-				}),
+			monthNameRow,
 			A2(
 				_elm_lang$core$List$map,
 				_user$project$Main$renderWeek,
@@ -9338,14 +9372,10 @@ var _user$project$Main$configView = function (model) {
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('col-2'),
+							_0: _elm_lang$html$Html_Attributes$class('col-1'),
 							_1: {ctor: '[]'}
 						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(prompt),
-							_1: {ctor: '[]'}
-						}),
+						{ctor: '[]'}),
 					_1: {
 						ctor: '::',
 						_0: A2(
@@ -9357,18 +9387,7 @@ var _user$project$Main$configView = function (model) {
 							},
 							{
 								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$input,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onInput(mkmsg),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$value(_p21._0),
-											_1: {ctor: '[]'}
-										}
-									},
-									{ctor: '[]'}),
+								_0: _elm_lang$html$Html$text(prompt),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
@@ -9382,10 +9401,36 @@ var _user$project$Main$configView = function (model) {
 								},
 								{
 									ctor: '::',
-									_0: configError(_p21._1),
+									_0: A2(
+										_elm_lang$html$Html$input,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onInput(mkmsg),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$value(_p21._0),
+												_1: {ctor: '[]'}
+											}
+										},
+										{ctor: '[]'}),
 									_1: {ctor: '[]'}
 								}),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('col-2'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: configError(_p21._1),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				});

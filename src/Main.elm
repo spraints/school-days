@@ -137,7 +137,8 @@ configView model =
   let
     configLine prompt (s, val) mkmsg =
       Html.div [ Html.Attributes.class "row" ]
-        [ Html.div [ Html.Attributes.class "col-2" ] [ Html.text prompt ]
+        [ Html.div [ Html.Attributes.class "col-1" ] []
+        , Html.div [ Html.Attributes.class "col-2" ] [ Html.text prompt ]
         , Html.div [ Html.Attributes.class "col-2" ] [ Html.input [ Html.Events.onInput mkmsg, Html.Attributes.value s ] [] ]
         , Html.div [ Html.Attributes.class "col-2" ] [ configError val ]
         ]
@@ -167,10 +168,15 @@ renderMonth : Month -> Html.Html Msg
 renderMonth month =
   let
     notSunday info _ = Date.Sat /= Date.dayOfWeek info.date
+    monthNameRow =
+      Html.div [ Html.Attributes.class "row" ]
+        [ Html.div [ Html.Attributes.class "col-1" ] []
+        , Html.div [ Html.Attributes.class "col-4" ] [ Html.h2 [ Html.Attributes.class "month-name" ] [ Html.text (toString month.month) ] ]
+        ]
   in
     groupWhile notSunday month.days
       |> List.map renderWeek
-      |> (::) (Html.h2 [ Html.Attributes.class "month-name" ] [ Html.text (toString month.month) ])
+      |> (::) monthNameRow
       |> Html.div [ Html.Attributes.class "month" ]
 
 renderWeek : List Day -> Html.Html Msg
