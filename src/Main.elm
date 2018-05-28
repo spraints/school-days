@@ -82,6 +82,10 @@ parseIntInput : String -> IntInput
 parseIntInput s =
   (s, String.toInt s)
 
+intAsIntInput : Int -> IntInput
+intAsIntInput n =
+  (toString n, Ok n)
+
 adjustFinished : Model -> Date -> IntInput
 adjustFinished model newToday =
   Debug.log ("adjustFinished: old date " ++ (toString model.today) ++ " new " ++ (toString newToday) ++ " ==> " ++ (toString <| realAdjustFinished model newToday))
@@ -106,22 +110,16 @@ flagify model =
   { finished = alwaysInt model.days_finished
   , required = alwaysInt model.days_required
   , skips = Set.toList model.days_to_skip
-  , start =
-    case model.today of
-      Nothing -> Nothing
-      Just d -> Just <| Date.toTime d
+  , start = Maybe.map Date.toTime model.today
   }
 
 unflagify : Flags -> Model
 unflagify flags =
   Debug.log "unflagified"
-  { days_finished = (toString flags.finished, Ok flags.finished)
-  , days_required = (toString flags.required, Ok flags.required)
+  { days_finished = intAsIntInput flags.finished
+  , days_required = intAsIntInput flags.required
   , days_to_skip = Set.fromList flags.skips
-  , today =
-    case flags.start of
-      Nothing -> Nothing
-      Just t -> Just <| Date.fromTime t
+  , today = Maybe.map Date.fromTime flags.start
   }
 
 view : Model -> Html.Html Msg
