@@ -9004,6 +9004,38 @@ var _user$project$Main$addDay = function (date) {
 var _user$project$Main$groupByWeek = function (days) {
 	return {ctor: '[]'};
 };
+var _user$project$Main$unflagify = function (flags) {
+	return {
+		days_finished: {
+			ctor: '_Tuple2',
+			_0: '0',
+			_1: _elm_lang$core$Result$Ok(0)
+		},
+		days_required: {
+			ctor: '_Tuple2',
+			_0: '180',
+			_1: _elm_lang$core$Result$Ok(180)
+		},
+		days_to_skip: _elm_lang$core$Set$empty,
+		today: _elm_lang$core$Maybe$Nothing
+	};
+};
+var _user$project$Main$flagify = function (model) {
+	return {};
+};
+var _user$project$Main$sub = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Main$title = _elm_lang$core$Native_Platform.outgoingPort(
+	'title',
+	function (v) {
+		return v;
+	});
+var _user$project$Main$saveModel = _elm_lang$core$Native_Platform.outgoingPort(
+	'saveModel',
+	function (v) {
+		return {};
+	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var updated_model = function () {
@@ -9065,15 +9097,12 @@ var _user$project$Main$update = F2(
 						});
 			}
 		}();
-		return {ctor: '_Tuple2', _0: updated_model, _1: _elm_lang$core$Platform_Cmd$none};
-	});
-var _user$project$Main$sub = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _user$project$Main$title = _elm_lang$core$Native_Platform.outgoingPort(
-	'title',
-	function (v) {
-		return v;
+		return {
+			ctor: '_Tuple2',
+			_0: updated_model,
+			_1: _user$project$Main$saveModel(
+				_user$project$Main$flagify(updated_model))
+		};
 	});
 var _user$project$Main$Model = F4(
 	function (a, b, c, d) {
@@ -9441,23 +9470,9 @@ var _user$project$Main$init = function (flags) {
 			_1: {ctor: '[]'}
 		}
 	};
-	var initialModel = {
-		days_finished: {
-			ctor: '_Tuple2',
-			_0: '0',
-			_1: _elm_lang$core$Result$Ok(0)
-		},
-		days_required: {
-			ctor: '_Tuple2',
-			_0: '180',
-			_1: _elm_lang$core$Result$Ok(180)
-		},
-		days_to_skip: _elm_lang$core$Set$empty,
-		today: _elm_lang$core$Maybe$Nothing
-	};
 	return {
 		ctor: '_Tuple2',
-		_0: initialModel,
+		_0: _user$project$Main$unflagify(flags),
 		_1: _elm_lang$core$Platform_Cmd$batch(initialActions)
 	};
 };

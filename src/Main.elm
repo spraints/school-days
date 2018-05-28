@@ -33,6 +33,7 @@ type alias Model =
 type alias Flags = {}
 
 port title : String -> Cmd a
+port saveModel : Flags -> Cmd a
 
 main = Html.programWithFlags
   { init = init
@@ -45,18 +46,12 @@ main = Html.programWithFlags
 init : Flags -> (Model, Cmd Msg)
 init flags =
   let
-    initialModel =
-      { days_finished = ("0", Ok 0)
-      , days_required = ("180", Ok 180)
-      , days_to_skip = Set.empty
-      , today = Nothing
-      }
     initialActions =
       [ title "School Days Remaining"
       , perform SetToday Date.now
       ]
   in
-    (initialModel, Cmd.batch initialActions)
+    (unflagify flags, Cmd.batch initialActions)
 
 sub : Model -> Sub Msg
 sub model = Sub.none
@@ -75,7 +70,19 @@ update msg model =
         SkipDays dates -> { model | days_to_skip = Set.union model.days_to_skip <| Set.fromList <| List.map toComparableDate dates }
         UnskipDays dates -> { model | days_to_skip = Set.diff model.days_to_skip <| Set.fromList <| List.map toComparableDate dates }
   in
-    (updated_model, Cmd.none)
+    (updated_model, saveModel <| flagify updated_model)
+
+flagify : Model -> Flags
+flagify model =
+  {}
+
+unflagify : Flags -> Model
+unflagify flags =
+  { days_finished = ("0", Ok 0)
+  , days_required = ("180", Ok 180)
+  , days_to_skip = Set.empty
+  , today = Nothing
+  }
 
 view : Model -> Html.Html Msg
 view model =

@@ -18,6 +18,7 @@
     <script type="text/javascript">
       var app = Elm.Main.fullscreen();
       app.ports.title.subscribe(title => { document.title = title });
+      app.ports.saveModel.subscribe(data => { console.log(data) })
     </script>
   </body>
 </html>
