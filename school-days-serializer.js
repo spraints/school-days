@@ -7,11 +7,18 @@
 (function(exports, storage) {
   'use strict';
 
+  exports.x = () => {
+    saveInt({"start": 1526000000000}, "start")
+  }
+
   exports.saveSchoolDays = data => {
     console.log(data)
+    console.log(new Date(data.start))
+    return
     saveInt(data, "finished")
     saveInt(data, "required")
     saveSkips(data)
+    saveInt(data, "start")
   }
 
   exports.loadSchoolDays = () => {
@@ -19,6 +26,7 @@
     loadInt(data, "finished")
     loadInt(data, "required")
     loadSkips(data)
+    loadInt(data, "start")
     return data
   }
 

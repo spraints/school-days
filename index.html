@@ -17,6 +17,7 @@
     <script src="school-days-left.js" type="text/javascript"></script>
     <script src="school-days-serializer.js" type="text/javascript"></script>
     <script type="text/javascript">
+      x() // change the date to 10-May-2018
       var app = Elm.Main.fullscreen(loadSchoolDays())
       app.ports.title.subscribe(title => { document.title = title });
       app.ports.saveModel.subscribe(data => saveSchoolDays(data))

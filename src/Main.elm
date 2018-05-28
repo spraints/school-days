@@ -68,7 +68,7 @@ update msg model =
     updated_model =
       case msg of
         Noop -> model
-        SetToday date -> { model | today = Just date }
+        SetToday date -> { model | today = Just date, days_finished = adjustFinished model date }
         UpdateDaysFinished s -> { model | days_finished = parseIntInput s } -- todo put this in the url?
         UpdateDaysRequired s -> { model | days_required = parseIntInput s }
         SkipDay date -> { model | days_to_skip = Set.insert (toComparableDate date) model.days_to_skip }
@@ -81,6 +81,26 @@ update msg model =
 parseIntInput : String -> IntInput
 parseIntInput s =
   (s, String.toInt s)
+
+adjustFinished : Model -> Date -> IntInput
+adjustFinished model newToday =
+  Debug.log ("adjustFinished: old date " ++ (toString model.today) ++ " new " ++ (toString newToday) ++ " ==> " ++ (toString <| realAdjustFinished model newToday))
+  model.days_finished
+
+realAdjustFinished : Model -> Date -> IntInput
+realAdjustFinished model newToday =
+  let
+    days = makeDays model
+    theDay = List.filter sameDay days
+
+    compToday = toComparableDate newToday
+    sameDay day =
+      if Date.year day.date /= Date.year newToday then
+        False
+      else
+        toComparableDate day.date == compToday
+  in
+    parseIntInput <| toString <| List.take 5 theDay
 
 flagify : Model -> Flags
 flagify model =
@@ -95,6 +115,7 @@ flagify model =
 
 unflagify : Flags -> Model
 unflagify flags =
+  Debug.log "unflagified"
   { days_finished = (toString flags.finished, Ok flags.finished)
   , days_required = (toString flags.required, Ok flags.required)
   , days_to_skip = Set.fromList flags.skips
@@ -221,10 +242,9 @@ type TypeOfDay = NoSchool
                | Weekend
                | School Int
 
-makeCalendar : Model -> Calendar
-makeCalendar model =
+makeDays : Model -> List Day
+makeDays model =
   let
-    makeDays = makeDaysRec []
     makeDaysRec res currentYear info =
       if Date.year info.date /= currentYear then
         reverse res
@@ -261,7 +281,14 @@ makeCalendar model =
         School <| info.completed + 1
       else
         Weekend
+  in
+    case model.today of
+      Nothing -> []
+      Just d -> makeDaysRec [] (Date.year d) (firstDayInfo d model)
 
+makeCalendar : Model -> Calendar
+makeCalendar model =
+  let
     startMonth info =
       { month = Date.month info.date
       , days = [info]
@@ -279,12 +306,7 @@ makeCalendar model =
     splitMonths =
       List.foldr aggMonth []
   in
-    case model.today of
-      Nothing -> []
-      Just today ->
-        firstDayInfo today model
-          |> makeDays (Date.year today)
-          |> splitMonths
+    makeDays model |> splitMonths
 
 
 addDay date =
