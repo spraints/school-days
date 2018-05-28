@@ -8900,11 +8900,10 @@ var _user$project$Main$toComparableDate = function (date) {
 		}
 	};
 	return {
-		ctor: '_Tuple3',
-		_0: _elm_lang$core$Date$year(date),
-		_1: monthNum(
+		ctor: '_Tuple2',
+		_0: monthNum(
 			_elm_lang$core$Date$month(date)),
-		_2: _elm_lang$core$Date$day(date)
+		_1: _elm_lang$core$Date$day(date)
 	};
 };
 var _user$project$Main$groupWhile = F2(
@@ -9060,7 +9059,7 @@ var _user$project$Main$saveModel = _elm_lang$core$Native_Platform.outgoingPort(
 			required: v.required,
 			skips: _elm_lang$core$Native_List.toArray(v.skips).map(
 				function (v) {
-					return [v._0, v._1, v._2];
+					return [v._0, v._1];
 				}),
 			start: (v.start.ctor === 'Nothing') ? null : v.start._0
 		};
@@ -9701,13 +9700,8 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 										return A2(
 											_elm_lang$core$Json_Decode$andThen,
 											function (x1) {
-												return A2(
-													_elm_lang$core$Json_Decode$andThen,
-													function (x2) {
-														return _elm_lang$core$Json_Decode$succeed(
-															{ctor: '_Tuple3', _0: x0, _1: x1, _2: x2});
-													},
-													A2(_elm_lang$core$Json_Decode$index, 2, _elm_lang$core$Json_Decode$int));
+												return _elm_lang$core$Json_Decode$succeed(
+													{ctor: '_Tuple2', _0: x0, _1: x1});
 											},
 											A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$int));
 									},

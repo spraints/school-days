@@ -332,7 +332,7 @@ groupWhile keepGrouping xs =
       ([], res) -> res
       (cur, res) -> cur :: res
 
-type alias ComparableDate = (Int, Int, Int)
+type alias ComparableDate = (Int, Int)
 
 toComparableDate : Date -> ComparableDate
 toComparableDate date =
@@ -352,4 +352,4 @@ toComparableDate date =
         Date.Nov -> 11
         Date.Dec -> 12
   in
-    (Date.year date, monthNum <| Date.month date, Date.day date)
+    (monthNum <| Date.month date, Date.day date)
