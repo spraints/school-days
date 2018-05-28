@@ -16,7 +16,7 @@
   -->
     <script src="school-days-left.js" type="text/javascript"></script>
     <script type="text/javascript">
-      var app = Elm.Main.fullscreen();
+      var app = Elm.Main.fullscreen({finished: 0, required: 180, skips: [], start: null})
       app.ports.title.subscribe(title => { document.title = title });
       app.ports.saveModel.subscribe(data => { console.log(data) })
     </script>

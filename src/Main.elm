@@ -8,7 +8,7 @@ import List exposing (head, reverse, tail)
 import Maybe exposing (withDefault)
 import Set exposing (Set)
 import Task exposing (perform)
-import Time exposing (hour)
+import Time exposing (Time, hour)
 
 import Debug
 
@@ -30,7 +30,12 @@ type alias Model =
   , today : Maybe Date
   }
 
-type alias Flags = {}
+type alias Flags =
+  { finished : Int
+  , required : Int
+  , skips : List ComparableDate
+  , start : Maybe Time
+  }
 
 port title : String -> Cmd a
 port saveModel : Flags -> Cmd a
@@ -74,14 +79,24 @@ update msg model =
 
 flagify : Model -> Flags
 flagify model =
-  {}
+  { finished = alwaysInt model.days_finished
+  , required = alwaysInt model.days_required
+  , skips = Set.toList model.days_to_skip
+  , start =
+    case model.today of
+      Nothing -> Nothing
+      Just d -> Just <| Date.toTime d
+  }
 
 unflagify : Flags -> Model
 unflagify flags =
-  { days_finished = ("0", Ok 0)
-  , days_required = ("180", Ok 180)
-  , days_to_skip = Set.empty
-  , today = Nothing
+  { days_finished = (toString flags.finished, Ok flags.finished)
+  , days_required = (toString flags.required, Ok flags.required)
+  , days_to_skip = Set.fromList flags.skips
+  , today =
+    case flags.start of
+      Nothing -> Nothing
+      Just t -> Just <| Date.fromTime t
   }
 
 view : Model -> Html.Html Msg
