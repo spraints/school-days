@@ -90,9 +90,6 @@ adjustFinished model newToday =
 realAdjustFinished : Model -> Date -> IntInput
 realAdjustFinished model newToday =
   let
-    days = makeDays model
-    theDay = List.filter sameDay days
-
     compToday = toComparableDate newToday
     sameDay day =
       if Date.year day.date /= Date.year newToday then
@@ -100,7 +97,9 @@ realAdjustFinished model newToday =
       else
         toComparableDate day.date == compToday
   in
-    parseIntInput <| toString <| List.take 5 theDay
+    case List.head <| List.filter sameDay <| makeDays model of
+      Nothing -> model.days_finished
+      Just day -> parseIntInput <| toString day
 
 flagify : Model -> Flags
 flagify model =

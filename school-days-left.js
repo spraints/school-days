@@ -9525,11 +9525,17 @@ var _user$project$Main$realAdjustFinished = F2(
 				_user$project$Main$toComparableDate(day.date),
 				compToday);
 		};
-		var days = _user$project$Main$makeDays(model);
-		var theDay = A2(_elm_lang$core$List$filter, sameDay, days);
-		return _user$project$Main$parseIntInput(
-			_elm_lang$core$Basics$toString(
-				A2(_elm_lang$core$List$take, 5, theDay)));
+		var _p27 = _elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$List$filter,
+				sameDay,
+				_user$project$Main$makeDays(model)));
+		if (_p27.ctor === 'Nothing') {
+			return model.days_finished;
+		} else {
+			return _user$project$Main$parseIntInput(
+				_elm_lang$core$Basics$toString(_p27._0));
+		}
 	});
 var _user$project$Main$adjustFinished = F2(
 	function (model, newToday) {
@@ -9557,29 +9563,29 @@ var _user$project$Main$adjustFinished = F2(
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var updated_model = function () {
-			var _p27 = msg;
-			switch (_p27.ctor) {
+			var _p28 = msg;
+			switch (_p28.ctor) {
 				case 'Noop':
 					return model;
 				case 'SetToday':
-					var _p28 = _p27._0;
+					var _p29 = _p28._0;
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							today: _elm_lang$core$Maybe$Just(_p28),
-							days_finished: A2(_user$project$Main$adjustFinished, model, _p28)
+							today: _elm_lang$core$Maybe$Just(_p29),
+							days_finished: A2(_user$project$Main$adjustFinished, model, _p29)
 						});
 				case 'UpdateDaysFinished':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							days_finished: _user$project$Main$parseIntInput(_p27._0)
+							days_finished: _user$project$Main$parseIntInput(_p28._0)
 						});
 				case 'UpdateDaysRequired':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							days_required: _user$project$Main$parseIntInput(_p27._0)
+							days_required: _user$project$Main$parseIntInput(_p28._0)
 						});
 				case 'SkipDay':
 					return _elm_lang$core$Native_Utils.update(
@@ -9587,7 +9593,7 @@ var _user$project$Main$update = F2(
 						{
 							days_to_skip: A2(
 								_elm_lang$core$Set$insert,
-								_user$project$Main$toComparableDate(_p27._0),
+								_user$project$Main$toComparableDate(_p28._0),
 								model.days_to_skip)
 						});
 				case 'UnskipDay':
@@ -9596,7 +9602,7 @@ var _user$project$Main$update = F2(
 						{
 							days_to_skip: A2(
 								_elm_lang$core$Set$remove,
-								_user$project$Main$toComparableDate(_p27._0),
+								_user$project$Main$toComparableDate(_p28._0),
 								model.days_to_skip)
 						});
 				case 'SkipDays':
@@ -9607,7 +9613,7 @@ var _user$project$Main$update = F2(
 								_elm_lang$core$Set$union,
 								model.days_to_skip,
 								_elm_lang$core$Set$fromList(
-									A2(_elm_lang$core$List$map, _user$project$Main$toComparableDate, _p27._0)))
+									A2(_elm_lang$core$List$map, _user$project$Main$toComparableDate, _p28._0)))
 						});
 				default:
 					return _elm_lang$core$Native_Utils.update(
@@ -9617,7 +9623,7 @@ var _user$project$Main$update = F2(
 								_elm_lang$core$Set$diff,
 								model.days_to_skip,
 								_elm_lang$core$Set$fromList(
-									A2(_elm_lang$core$List$map, _user$project$Main$toComparableDate, _p27._0)))
+									A2(_elm_lang$core$List$map, _user$project$Main$toComparableDate, _p28._0)))
 						});
 			}
 		}();
@@ -9641,25 +9647,25 @@ var _user$project$Main$makeCalendar = function (model) {
 	};
 	var aggMonth = F2(
 		function (info, res) {
-			var _p29 = _user$project$Main$uncons(res);
-			if (_p29.ctor === 'Nothing') {
+			var _p30 = _user$project$Main$uncons(res);
+			if (_p30.ctor === 'Nothing') {
 				return {
 					ctor: '::',
 					_0: startMonth(info),
 					_1: {ctor: '[]'}
 				};
 			} else {
-				var _p30 = _p29._0._0;
+				var _p31 = _p30._0._0;
 				return _elm_lang$core$Native_Utils.eq(
-					_p30.month,
+					_p31.month,
 					_elm_lang$core$Date$month(info.date)) ? {
 					ctor: '::',
 					_0: _elm_lang$core$Native_Utils.update(
-						_p30,
+						_p31,
 						{
-							days: {ctor: '::', _0: info, _1: _p30.days}
+							days: {ctor: '::', _0: info, _1: _p31.days}
 						}),
-					_1: _p29._0._1
+					_1: _p30._0._1
 				} : {
 					ctor: '::',
 					_0: startMonth(info),
