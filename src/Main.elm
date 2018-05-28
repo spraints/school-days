@@ -13,10 +13,11 @@ import Time exposing (Time, hour)
 import Debug
 
 type alias ParsedInt = Result String Int
+type alias IntInput = (String, ParsedInt)
 
 type Msg = SetToday Date
-         | UpdateDaysFinished (String, ParsedInt)
-         | UpdateDaysRequired (String, ParsedInt)
+         | UpdateDaysFinished String
+         | UpdateDaysRequired String
          | SkipDay Date
          | UnskipDay Date
          | SkipDays (List Date)
@@ -24,8 +25,8 @@ type Msg = SetToday Date
          | Noop
 
 type alias Model =
-  { days_finished : (String, ParsedInt)
-  , days_required : (String, ParsedInt)
+  { days_finished : IntInput
+  , days_required : IntInput
   , days_to_skip : Set ComparableDate
   , today : Maybe Date
   }
@@ -68,14 +69,18 @@ update msg model =
       case msg of
         Noop -> model
         SetToday date -> { model | today = Just date }
-        UpdateDaysFinished n -> { model | days_finished = n } -- todo put this in the url?
-        UpdateDaysRequired n -> { model | days_required = n }
+        UpdateDaysFinished s -> { model | days_finished = parseIntInput s } -- todo put this in the url?
+        UpdateDaysRequired s -> { model | days_required = parseIntInput s }
         SkipDay date -> { model | days_to_skip = Set.insert (toComparableDate date) model.days_to_skip }
         UnskipDay date -> { model | days_to_skip = Set.remove (toComparableDate date) model.days_to_skip }
         SkipDays dates -> { model | days_to_skip = Set.union model.days_to_skip <| Set.fromList <| List.map toComparableDate dates }
         UnskipDays dates -> { model | days_to_skip = Set.diff model.days_to_skip <| Set.fromList <| List.map toComparableDate dates }
   in
     (updated_model, saveModel <| flagify updated_model)
+
+parseIntInput : String -> IntInput
+parseIntInput s =
+  (s, String.toInt s)
 
 flagify : Model -> Flags
 flagify model =
@@ -114,15 +119,13 @@ configView model =
     configLine prompt (s, val) mkmsg =
       Html.div [ Html.Attributes.class "row" ]
         [ Html.div [ Html.Attributes.class "col-2" ] [ Html.text prompt ]
-        , Html.div [ Html.Attributes.class "col-2" ] [ Html.input [ Html.Events.onInput <| updateConfig mkmsg, Html.Attributes.value s ] [] ]
+        , Html.div [ Html.Attributes.class "col-2" ] [ Html.input [ Html.Events.onInput mkmsg, Html.Attributes.value s ] [] ]
         , Html.div [ Html.Attributes.class "col-2" ] [ configError val ]
         ]
     configError val =
       case val of
         Ok _ -> Html.text ""
         Err msg -> Html.span [ Html.Attributes.class "config-error" ] [ Html.text msg ]
-    updateConfig mkmsg s =
-      mkmsg (s, String.toInt s)
   in
     Html.div []
       [ configLine "Days Finished" model.days_finished UpdateDaysFinished
@@ -300,7 +303,7 @@ isWeekend date =
     Date.Sat -> True
     Date.Sun -> True
 
-alwaysInt : (String, ParsedInt) -> Int
+alwaysInt : IntInput -> Int
 alwaysInt (_, res) =
   case res of
     Err _ -> 0

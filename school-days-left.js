@@ -9004,28 +9004,31 @@ var _user$project$Main$groupByWeek = function (days) {
 	return {ctor: '[]'};
 };
 var _user$project$Main$unflagify = function (flags) {
-	return {
-		days_finished: {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Basics$toString(flags.finished),
-			_1: _elm_lang$core$Result$Ok(flags.finished)
-		},
-		days_required: {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Basics$toString(flags.required),
-			_1: _elm_lang$core$Result$Ok(flags.required)
-		},
-		days_to_skip: _elm_lang$core$Set$fromList(flags.skips),
-		today: function () {
-			var _p12 = flags.start;
-			if (_p12.ctor === 'Nothing') {
-				return _elm_lang$core$Maybe$Nothing;
-			} else {
-				return _elm_lang$core$Maybe$Just(
-					_elm_lang$core$Date$fromTime(_p12._0));
-			}
-		}()
-	};
+	return A2(
+		_elm_lang$core$Debug$log,
+		'unflagified',
+		{
+			days_finished: {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Basics$toString(flags.finished),
+				_1: _elm_lang$core$Result$Ok(flags.finished)
+			},
+			days_required: {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Basics$toString(flags.required),
+				_1: _elm_lang$core$Result$Ok(flags.required)
+			},
+			days_to_skip: _elm_lang$core$Set$fromList(flags.skips),
+			today: function () {
+				var _p12 = flags.start;
+				if (_p12.ctor === 'Nothing') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					return _elm_lang$core$Maybe$Just(
+						_elm_lang$core$Date$fromTime(_p12._0));
+				}
+			}()
+		});
 };
 var _user$project$Main$flagify = function (model) {
 	return {
@@ -9041,6 +9044,13 @@ var _user$project$Main$flagify = function (model) {
 					_elm_lang$core$Date$toTime(_p13._0));
 			}
 		}()
+	};
+};
+var _user$project$Main$parseIntInput = function (s) {
+	return {
+		ctor: '_Tuple2',
+		_0: s,
+		_1: _elm_lang$core$String$toInt(s)
 	};
 };
 var _user$project$Main$sub = function (model) {
@@ -9080,11 +9090,15 @@ var _user$project$Main$update = F2(
 				case 'UpdateDaysFinished':
 					return _elm_lang$core$Native_Utils.update(
 						model,
-						{days_finished: _p14._0});
+						{
+							days_finished: _user$project$Main$parseIntInput(_p14._0)
+						});
 				case 'UpdateDaysRequired':
 					return _elm_lang$core$Native_Utils.update(
 						model,
-						{days_required: _p14._0});
+						{
+							days_required: _user$project$Main$parseIntInput(_p14._0)
+						});
 				case 'SkipDay':
 					return _elm_lang$core$Native_Utils.update(
 						model,
@@ -9378,15 +9392,6 @@ var _user$project$Main$UpdateDaysFinished = function (a) {
 	return {ctor: 'UpdateDaysFinished', _0: a};
 };
 var _user$project$Main$configView = function (model) {
-	var updateConfig = F2(
-		function (mkmsg, s) {
-			return mkmsg(
-				{
-					ctor: '_Tuple2',
-					_0: s,
-					_1: _elm_lang$core$String$toInt(s)
-				});
-		});
 	var configError = function (val) {
 		var _p22 = val;
 		if (_p22.ctor === 'Ok') {
@@ -9445,8 +9450,7 @@ var _user$project$Main$configView = function (model) {
 									_elm_lang$html$Html$input,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onInput(
-											updateConfig(mkmsg)),
+										_0: _elm_lang$html$Html_Events$onInput(mkmsg),
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$html$Html_Attributes$value(_p24._0),
