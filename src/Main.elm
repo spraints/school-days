@@ -8,15 +8,16 @@ import List exposing (head, reverse, tail)
 import Maybe exposing (withDefault)
 import Set exposing (Set)
 import Task exposing (perform)
-import Time exposing (hour)
+import Time exposing (Time, hour)
 
 import Debug
 
 type alias ParsedInt = Result String Int
+type alias IntInput = (String, ParsedInt)
 
 type Msg = SetToday Date
-         | UpdateDaysFinished (String, ParsedInt)
-         | UpdateDaysRequired (String, ParsedInt)
+         | UpdateDaysFinished String
+         | UpdateDaysRequired String
          | SkipDay Date
          | UnskipDay Date
          | SkipDays (List Date)
@@ -24,15 +25,23 @@ type Msg = SetToday Date
          | Noop
 
 type alias Model =
-  { days_finished : (String, ParsedInt)
-  , days_required : (String, ParsedInt)
+  { days_finished : IntInput
+  , days_required : IntInput
   , days_to_skip : Set ComparableDate
   , today : Maybe Date
   }
 
-port title : String -> Cmd a
+type alias Flags =
+  { finished : Int
+  , required : Int
+  , skips : List ComparableDate
+  , start : Maybe Time
+  }
 
-main = Html.program
+port title : String -> Cmd a
+port saveModel : Flags -> Cmd a
+
+main = Html.programWithFlags
   { init = init
   , subscriptions = sub
   , update = update
@@ -40,21 +49,15 @@ main = Html.program
   }
 
 -- days left
-init : (Model, Cmd Msg)
-init =
+init : Flags -> (Model, Cmd Msg)
+init flags =
   let
-    initialModel =
-      { days_finished = ("0", Ok 0)
-      , days_required = ("180", Ok 180)
-      , days_to_skip = Set.empty
-      , today = Nothing
-      }
     initialActions =
       [ title "School Days Remaining"
       , perform SetToday Date.now
       ]
   in
-    (initialModel, Cmd.batch initialActions)
+    (unflagify flags, Cmd.batch initialActions)
 
 sub : Model -> Sub Msg
 sub model = Sub.none
@@ -65,15 +68,60 @@ update msg model =
     updated_model =
       case msg of
         Noop -> model
-        SetToday date -> { model | today = Just date }
-        UpdateDaysFinished n -> { model | days_finished = n } -- todo put this in the url?
-        UpdateDaysRequired n -> { model | days_required = n }
+        SetToday date -> { model | today = Just date, days_finished = adjustFinished model date }
+        UpdateDaysFinished s -> { model | days_finished = parseIntInput s } -- todo put this in the url?
+        UpdateDaysRequired s -> { model | days_required = parseIntInput s }
         SkipDay date -> { model | days_to_skip = Set.insert (toComparableDate date) model.days_to_skip }
         UnskipDay date -> { model | days_to_skip = Set.remove (toComparableDate date) model.days_to_skip }
         SkipDays dates -> { model | days_to_skip = Set.union model.days_to_skip <| Set.fromList <| List.map toComparableDate dates }
         UnskipDays dates -> { model | days_to_skip = Set.diff model.days_to_skip <| Set.fromList <| List.map toComparableDate dates }
   in
-    (updated_model, Cmd.none)
+    (updated_model, saveModel <| flagify updated_model)
+
+parseIntInput : String -> IntInput
+parseIntInput s =
+  (s, String.toInt s)
+
+intAsIntInput : Int -> IntInput
+intAsIntInput n =
+  (toString n, Ok n)
+
+adjustFinished : Model -> Date -> IntInput
+adjustFinished model newToday =
+  let
+    compNewToday = toComparableDate newToday
+    accum day res =
+      if toComparableDate day.date < compNewToday then
+        case day.what of
+          School n -> intAsIntInput n
+          _ -> res
+      else
+        res
+  in
+    case model.today of
+      Nothing -> model.days_finished
+      Just today ->
+        if Date.year today /= Date.year newToday then
+          intAsIntInput 0
+        else
+          List.foldl accum model.days_finished <| makeDays model
+
+flagify : Model -> Flags
+flagify model =
+  { finished = alwaysInt model.days_finished
+  , required = alwaysInt model.days_required
+  , skips = Set.toList model.days_to_skip
+  , start = Maybe.map Date.toTime model.today
+  }
+
+unflagify : Flags -> Model
+unflagify flags =
+  Debug.log "unflagified"
+  { days_finished = intAsIntInput flags.finished
+  , days_required = intAsIntInput flags.required
+  , days_to_skip = Set.fromList flags.skips
+  , today = Maybe.map Date.fromTime flags.start
+  }
 
 view : Model -> Html.Html Msg
 view model =
@@ -89,16 +137,15 @@ configView model =
   let
     configLine prompt (s, val) mkmsg =
       Html.div [ Html.Attributes.class "row" ]
-        [ Html.div [ Html.Attributes.class "col-2" ] [ Html.text prompt ]
-        , Html.div [ Html.Attributes.class "col-2" ] [ Html.input [ Html.Events.onInput <| updateConfig mkmsg, Html.Attributes.value s ] [] ]
+        [ Html.div [ Html.Attributes.class "col-1" ] []
+        , Html.div [ Html.Attributes.class "col-2" ] [ Html.text prompt ]
+        , Html.div [ Html.Attributes.class "col-2" ] [ Html.input [ Html.Events.onInput mkmsg, Html.Attributes.value s ] [] ]
         , Html.div [ Html.Attributes.class "col-2" ] [ configError val ]
         ]
     configError val =
       case val of
         Ok _ -> Html.text ""
         Err msg -> Html.span [ Html.Attributes.class "config-error" ] [ Html.text msg ]
-    updateConfig mkmsg s =
-      mkmsg (s, String.toInt s)
   in
     Html.div []
       [ configLine "Days Finished" model.days_finished UpdateDaysFinished
@@ -121,10 +168,15 @@ renderMonth : Month -> Html.Html Msg
 renderMonth month =
   let
     notSunday info _ = Date.Sat /= Date.dayOfWeek info.date
+    monthNameRow =
+      Html.div [ Html.Attributes.class "row" ]
+        [ Html.div [ Html.Attributes.class "col-1" ] []
+        , Html.div [ Html.Attributes.class "col-4" ] [ Html.h2 [ Html.Attributes.class "month-name" ] [ Html.text (toString month.month) ] ]
+        ]
   in
     groupWhile notSunday month.days
       |> List.map renderWeek
-      |> (::) (Html.h2 [ Html.Attributes.class "month-name" ] [ Html.text (toString month.month) ])
+      |> (::) monthNameRow
       |> Html.div [ Html.Attributes.class "month" ]
 
 renderWeek : List Day -> Html.Html Msg
@@ -194,10 +246,9 @@ type TypeOfDay = NoSchool
                | Weekend
                | School Int
 
-makeCalendar : Model -> Calendar
-makeCalendar model =
+makeDays : Model -> List Day
+makeDays model =
   let
-    makeDays = makeDaysRec []
     makeDaysRec res currentYear info =
       if Date.year info.date /= currentYear then
         reverse res
@@ -234,7 +285,14 @@ makeCalendar model =
         School <| info.completed + 1
       else
         Weekend
+  in
+    case model.today of
+      Nothing -> []
+      Just d -> makeDaysRec [] (Date.year d) (firstDayInfo d model)
 
+makeCalendar : Model -> Calendar
+makeCalendar model =
+  let
     startMonth info =
       { month = Date.month info.date
       , days = [info]
@@ -252,12 +310,7 @@ makeCalendar model =
     splitMonths =
       List.foldr aggMonth []
   in
-    case model.today of
-      Nothing -> []
-      Just today ->
-        firstDayInfo today model
-          |> makeDays (Date.year today)
-          |> splitMonths
+    makeDays model |> splitMonths
 
 
 addDay date =
@@ -276,7 +329,7 @@ isWeekend date =
     Date.Sat -> True
     Date.Sun -> True
 
-alwaysInt : (String, ParsedInt) -> Int
+alwaysInt : IntInput -> Int
 alwaysInt (_, res) =
   case res of
     Err _ -> 0
@@ -308,7 +361,7 @@ groupWhile keepGrouping xs =
       ([], res) -> res
       (cur, res) -> cur :: res
 
-type alias ComparableDate = (Int, Int, Int)
+type alias ComparableDate = (Int, Int)
 
 toComparableDate : Date -> ComparableDate
 toComparableDate date =
@@ -328,4 +381,4 @@ toComparableDate date =
         Date.Nov -> 11
         Date.Dec -> 12
   in
-    (Date.year date, monthNum <| Date.month date, Date.day date)
+    (monthNum <| Date.month date, Date.day date)
