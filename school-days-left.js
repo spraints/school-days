@@ -9159,9 +9159,6 @@ var _spraints$school_days$Main$makeCalendar = function (model) {
 	return splitMonths(
 		_spraints$school_days$Main$makeDays(model));
 };
-var _spraints$school_days$Main$groupByWeek = function (days) {
-	return {ctor: '[]'};
-};
 var _spraints$school_days$Main$renderWeek = function (days) {
 	var weekAct = F2(
 		function (act, label) {

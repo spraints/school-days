@@ -216,10 +216,6 @@ renderWeek days =
   in
     [weekActs] ++ pad ++ htmlDays |> Html.div [ Html.Attributes.class "row" ]
 
-groupByWeek : List Calendar.Day -> List (List Calendar.Day)
-groupByWeek days =
-  []
-
 makeDays : Model -> List Calendar.Day
 makeDays model =
   let
