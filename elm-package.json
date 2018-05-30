@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "when will we do school this year?",
-    "repository": "https://github.com/spraints/school-days",
+    "repository": "https://github.com/spraints/school-days.git",
     "license": "MIT",
     "source-directories": [
         "src"
