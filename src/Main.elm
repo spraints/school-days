@@ -13,25 +13,7 @@ import Time exposing (Time, hour)
 import Debug
 
 import Calendar
-
-type alias ParsedInt = Result String Int
-type alias IntInput = (String, ParsedInt)
-
-type Msg = SetToday Date
-         | UpdateDaysFinished String
-         | UpdateDaysRequired String
-         | SkipDay Date
-         | UnskipDay Date
-         | SkipDays (List Date)
-         | UnskipDays (List Date)
-         | Noop
-
-type alias Model =
-  { days_finished : IntInput
-  , days_required : IntInput
-  , days_to_skip : Set ComparableDate
-  , today : Maybe Date
-  }
+import Types exposing (..)
 
 type alias Flags =
   { finished : Int
@@ -352,8 +334,6 @@ groupWhile keepGrouping xs =
     case List.foldr prepend ([], []) xs of
       ([], res) -> res
       (cur, res) -> cur :: res
-
-type alias ComparableDate = (Int, Int)
 
 toComparableDate : Date -> ComparableDate
 toComparableDate date =
