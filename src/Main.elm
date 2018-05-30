@@ -11,6 +11,7 @@ import Task exposing (perform)
 import Time exposing (Time, hour)
 
 import Calendar
+import DateHelpers exposing (..)
 import Types exposing (..)
 
 type alias Flags =
@@ -284,25 +285,6 @@ makeCalendar model =
       List.foldr aggMonth []
   in
     makeDays model |> splitMonths
-
-addDay : Date -> Date
-addDay date =
-  Date.fromTime <| 24 * hour + (Date.toTime date)
-
-subDay : Date -> Date
-subDay date =
-  Date.fromTime <| (Date.toTime date) - 24 * hour
-
-isWeekend : Date -> Bool
-isWeekend date =
-  case Date.dayOfWeek date of
-    Date.Mon -> False
-    Date.Tue -> False
-    Date.Wed -> False
-    Date.Thu -> False
-    Date.Fri -> False
-    Date.Sat -> True
-    Date.Sun -> True
 
 alwaysInt : IntInput -> Int
 alwaysInt (_, res) =
