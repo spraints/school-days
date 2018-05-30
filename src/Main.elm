@@ -12,6 +12,8 @@ import Time exposing (Time, hour)
 
 import Debug
 
+import Calendar
+
 type alias ParsedInt = Result String Int
 type alias IntInput = (String, ParsedInt)
 
@@ -93,7 +95,7 @@ adjustFinished model newToday =
     accum day res =
       if toComparableDate day.date < compNewToday then
         case day.what of
-          School n -> intAsIntInput n
+          Calendar.School n -> intAsIntInput n
           _ -> res
       else
         res
@@ -164,7 +166,7 @@ calendarView model =
     Html.div [] <|
       List.map renderMonth months
 
-renderMonth : Month -> Html.Html Msg
+renderMonth : Calendar.Month -> Html.Html Msg
 renderMonth month =
   let
     notSunday info _ = Date.Sat /= Date.dayOfWeek info.date
@@ -179,7 +181,7 @@ renderMonth month =
       |> (::) monthNameRow
       |> Html.div [ Html.Attributes.class "month" ]
 
-renderWeek : List Day -> Html.Html Msg
+renderWeek : List Calendar.Day -> Html.Html Msg
 renderWeek days =
   let
     firstDOW =
@@ -198,19 +200,19 @@ renderWeek days =
 
     whatClass day =
       case day.what of
-        NoSchool -> "no-school"
-        Weekend -> "no-school"
-        School _ -> "school"
+        Calendar.NoSchool -> "no-school"
+        Calendar.Weekend -> "no-school"
+        Calendar.School _ -> "school"
     dayDesc day =
       case day.what of
-        School n -> (toString n) ++ " days"
-        NoSchool -> "(skip)"
-        Weekend -> ""
+        Calendar.School n -> (toString n) ++ " days"
+        Calendar.NoSchool -> "(skip)"
+        Calendar.Weekend -> ""
     act day =
       case day.what of
-        School _ -> SkipDay day.date
-        NoSchool -> UnskipDay day.date
-        Weekend -> Noop
+        Calendar.School _ -> SkipDay day.date
+        Calendar.NoSchool -> UnskipDay day.date
+        Calendar.Weekend -> Noop
     htmlDay day =
       Html.div [ Html.Events.onClick (act day), Html.Attributes.class ("col-1 day " ++ (whatClass day)) ]
         [ Html.h6 [ Html.Attributes.class "day-number" ] [ Html.text <| toString <| Date.day day.date ]
@@ -232,21 +234,11 @@ renderWeek days =
   in
     [weekActs] ++ pad ++ htmlDays |> Html.div [ Html.Attributes.class "row" ]
 
-groupByWeek : List Day -> List (List Day)
+groupByWeek : List Calendar.Day -> List (List Calendar.Day)
 groupByWeek days =
   []
 
-type alias Calendar = List Month
-type alias Month = { month : Date.Month, days : List Day }
-type alias Day =
-  { date : Date
-  , what : TypeOfDay
-  }
-type TypeOfDay = NoSchool
-               | Weekend
-               | School Int
-
-makeDays : Model -> List Day
+makeDays : Model -> List Calendar.Day
 makeDays model =
   let
     makeDaysRec res currentYear info =
@@ -263,7 +255,7 @@ makeDays model =
       | date = addDay info.date
       , completed =
           case d.what of
-            School n -> n
+            Calendar.School n -> n
             _ -> info.completed
       }
     firstDayInfo today model =
@@ -278,19 +270,19 @@ makeDays model =
       }
     whatIs info =
       if isWeekend info.date then
-        Weekend
+        Calendar.Weekend
       else if Set.member (toComparableDate info.date) model.days_to_skip then
-        NoSchool
+        Calendar.NoSchool
       else if info.completed < (alwaysInt model.days_required) then
-        School <| info.completed + 1
+        Calendar.School <| info.completed + 1
       else
-        Weekend
+        Calendar.Weekend
   in
     case model.today of
       Nothing -> []
       Just d -> makeDaysRec [] (Date.year d) (firstDayInfo d model)
 
-makeCalendar : Model -> Calendar
+makeCalendar : Model -> Calendar.Calendar
 makeCalendar model =
   let
     startMonth info =
