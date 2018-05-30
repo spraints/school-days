@@ -4,14 +4,14 @@ import Date exposing (Date)
 import Html
 import Html.Attributes
 import Html.Events
-import List exposing (head, reverse, tail)
+import List exposing (head, tail)
 import Maybe exposing (withDefault)
 import Set exposing (Set)
 import Task exposing (perform)
 import Time exposing (Time, hour)
 
-import Calendar
-import DateHelpers exposing (..)
+import Calendar exposing (makeCalendar, makeDays)
+import DateHelpers exposing (subDay)
 import Types exposing (..)
 
 type alias Flags =
@@ -215,86 +215,6 @@ renderWeek days =
         ]
   in
     [weekActs] ++ pad ++ htmlDays |> Html.div [ Html.Attributes.class "row" ]
-
-makeDays : Model -> List Calendar.Day
-makeDays model =
-  let
-    makeDaysRec res currentYear info =
-      if Date.year info.date /= currentYear then
-        reverse res
-      else
-        let
-          d = makeDay info
-        in
-          makeDaysRec (d :: res) currentYear (nextDayInfo info d)
-
-    nextDayInfo info d =
-      { info
-      | date = addDay info.date
-      , completed =
-          case d.what of
-            Calendar.School n -> n
-            _ -> info.completed
-      }
-    firstDayInfo today model =
-      { date = today
-      , completed = alwaysInt model.days_finished
-      , skipped = model.days_to_skip
-      }
-
-    makeDay info =
-      { date = info.date
-      , what = whatIs info
-      }
-    whatIs info =
-      if isWeekend info.date then
-        Calendar.Weekend
-      else if Set.member (toComparableDate info.date) model.days_to_skip then
-        Calendar.NoSchool
-      else if info.completed < (alwaysInt model.days_required) then
-        Calendar.School <| info.completed + 1
-      else
-        Calendar.Weekend
-  in
-    case model.today of
-      Nothing -> []
-      Just d -> makeDaysRec [] (Date.year d) (firstDayInfo d model)
-
-makeCalendar : Model -> Calendar.Calendar
-makeCalendar model =
-  let
-    startMonth info =
-      { month = Date.month info.date
-      , days = [info]
-      }
-
-    aggMonth info res =
-      case uncons res of
-        Nothing -> [startMonth info]
-        Just (month, rest) ->
-          if month.month == Date.month info.date then
-            {month | days = info :: month.days} :: rest
-          else
-            (startMonth info) :: res
-
-    splitMonths =
-      List.foldr aggMonth []
-  in
-    makeDays model |> splitMonths
-
-alwaysInt : IntInput -> Int
-alwaysInt (_, res) =
-  case res of
-    Err _ -> 0
-    Ok n -> n
-
--- exactly like
--- https://github.com/elm-community/list-extra/blob/36b63fc2ab1b1b602a30dbc71e9b829a0f325e21/src/List/Extra.elm#L285-L298
-uncons : List a -> Maybe (a, List a)
-uncons list =
-  case list of
-    [] -> Nothing
-    x :: xs -> Just ( x, xs )
 
 -- kind of inspired by
 -- https://github.com/elm-community/list-extra/blob/36b63fc2ab1b1b602a30dbc71e9b829a0f325e21/src/List/Extra.elm#L1302-L1328

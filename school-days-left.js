@@ -8869,52 +8869,19 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
-var _spraints$school_days$Calendar$Month = F2(
-	function (a, b) {
-		return {month: a, days: b};
-	});
-var _spraints$school_days$Calendar$Day = F2(
-	function (a, b) {
-		return {date: a, what: b};
-	});
-var _spraints$school_days$Calendar$School = function (a) {
-	return {ctor: 'School', _0: a};
-};
-var _spraints$school_days$Calendar$Weekend = {ctor: 'Weekend'};
-var _spraints$school_days$Calendar$NoSchool = {ctor: 'NoSchool'};
-
-var _spraints$school_days$DateHelpers$isWeekend = function (date) {
-	var _p0 = _elm_lang$core$Date$dayOfWeek(date);
-	switch (_p0.ctor) {
-		case 'Mon':
-			return false;
-		case 'Tue':
-			return false;
-		case 'Wed':
-			return false;
-		case 'Thu':
-			return false;
-		case 'Fri':
-			return false;
-		case 'Sat':
-			return true;
-		default:
-			return true;
+var _spraints$school_days$Types$alwaysInt = function (_p0) {
+	var _p1 = _p0;
+	var _p2 = _p1._1;
+	if (_p2.ctor === 'Err') {
+		return 0;
+	} else {
+		return _p2._0;
 	}
 };
-var _spraints$school_days$DateHelpers$subDay = function (date) {
-	return _elm_lang$core$Date$fromTime(
-		_elm_lang$core$Date$toTime(date) - (24 * _elm_lang$core$Time$hour));
-};
-var _spraints$school_days$DateHelpers$addDay = function (date) {
-	return _elm_lang$core$Date$fromTime(
-		(24 * _elm_lang$core$Time$hour) + _elm_lang$core$Date$toTime(date));
-};
-
 var _spraints$school_days$Types$toComparableDate = function (date) {
 	var monthNum = function (month) {
-		var _p0 = month;
-		switch (_p0.ctor) {
+		var _p3 = month;
+		switch (_p3.ctor) {
 			case 'Jan':
 				return 1;
 			case 'Feb':
@@ -8975,6 +8942,174 @@ var _spraints$school_days$Types$SetToday = function (a) {
 	return {ctor: 'SetToday', _0: a};
 };
 
+var _spraints$school_days$DateHelpers$isWeekend = function (date) {
+	var _p0 = _elm_lang$core$Date$dayOfWeek(date);
+	switch (_p0.ctor) {
+		case 'Mon':
+			return false;
+		case 'Tue':
+			return false;
+		case 'Wed':
+			return false;
+		case 'Thu':
+			return false;
+		case 'Fri':
+			return false;
+		case 'Sat':
+			return true;
+		default:
+			return true;
+	}
+};
+var _spraints$school_days$DateHelpers$subDay = function (date) {
+	return _elm_lang$core$Date$fromTime(
+		_elm_lang$core$Date$toTime(date) - (24 * _elm_lang$core$Time$hour));
+};
+var _spraints$school_days$DateHelpers$addDay = function (date) {
+	return _elm_lang$core$Date$fromTime(
+		(24 * _elm_lang$core$Time$hour) + _elm_lang$core$Date$toTime(date));
+};
+
+var _spraints$school_days$Calendar$uncons = function (list) {
+	var _p0 = list;
+	if (_p0.ctor === '[]') {
+		return _elm_lang$core$Maybe$Nothing;
+	} else {
+		return _elm_lang$core$Maybe$Just(
+			{ctor: '_Tuple2', _0: _p0._0, _1: _p0._1});
+	}
+};
+var _spraints$school_days$Calendar$Month = F2(
+	function (a, b) {
+		return {month: a, days: b};
+	});
+var _spraints$school_days$Calendar$Day = F2(
+	function (a, b) {
+		return {date: a, what: b};
+	});
+var _spraints$school_days$Calendar$School = function (a) {
+	return {ctor: 'School', _0: a};
+};
+var _spraints$school_days$Calendar$Weekend = {ctor: 'Weekend'};
+var _spraints$school_days$Calendar$NoSchool = {ctor: 'NoSchool'};
+var _spraints$school_days$Calendar$makeDays = function (model) {
+	var whatIs = function (info) {
+		return _spraints$school_days$DateHelpers$isWeekend(info.date) ? _spraints$school_days$Calendar$Weekend : (A2(
+			_elm_lang$core$Set$member,
+			_spraints$school_days$Types$toComparableDate(info.date),
+			model.days_to_skip) ? _spraints$school_days$Calendar$NoSchool : ((_elm_lang$core$Native_Utils.cmp(
+			info.completed,
+			_spraints$school_days$Types$alwaysInt(model.days_required)) < 0) ? _spraints$school_days$Calendar$School(info.completed + 1) : _spraints$school_days$Calendar$Weekend));
+	};
+	var makeDay = function (info) {
+		return {
+			date: info.date,
+			what: whatIs(info)
+		};
+	};
+	var firstDayInfo = F2(
+		function (today, model) {
+			return {
+				date: today,
+				completed: _spraints$school_days$Types$alwaysInt(model.days_finished),
+				skipped: model.days_to_skip
+			};
+		});
+	var nextDayInfo = F2(
+		function (info, d) {
+			return _elm_lang$core$Native_Utils.update(
+				info,
+				{
+					date: _spraints$school_days$DateHelpers$addDay(info.date),
+					completed: function () {
+						var _p1 = d.what;
+						if (_p1.ctor === 'School') {
+							return _p1._0;
+						} else {
+							return info.completed;
+						}
+					}()
+				});
+		});
+	var makeDaysRec = F3(
+		function (res, currentYear, info) {
+			makeDaysRec:
+			while (true) {
+				if (!_elm_lang$core$Native_Utils.eq(
+					_elm_lang$core$Date$year(info.date),
+					currentYear)) {
+					return _elm_lang$core$List$reverse(res);
+				} else {
+					var d = makeDay(info);
+					var _v2 = {ctor: '::', _0: d, _1: res},
+						_v3 = currentYear,
+						_v4 = A2(nextDayInfo, info, d);
+					res = _v2;
+					currentYear = _v3;
+					info = _v4;
+					continue makeDaysRec;
+				}
+			}
+		});
+	var _p2 = model.today;
+	if (_p2.ctor === 'Nothing') {
+		return {ctor: '[]'};
+	} else {
+		var _p3 = _p2._0;
+		return A3(
+			makeDaysRec,
+			{ctor: '[]'},
+			_elm_lang$core$Date$year(_p3),
+			A2(firstDayInfo, _p3, model));
+	}
+};
+var _spraints$school_days$Calendar$makeCalendar = function (model) {
+	var startMonth = function (info) {
+		return {
+			month: _elm_lang$core$Date$month(info.date),
+			days: {
+				ctor: '::',
+				_0: info,
+				_1: {ctor: '[]'}
+			}
+		};
+	};
+	var aggMonth = F2(
+		function (info, res) {
+			var _p4 = _spraints$school_days$Calendar$uncons(res);
+			if (_p4.ctor === 'Nothing') {
+				return {
+					ctor: '::',
+					_0: startMonth(info),
+					_1: {ctor: '[]'}
+				};
+			} else {
+				var _p5 = _p4._0._0;
+				return _elm_lang$core$Native_Utils.eq(
+					_p5.month,
+					_elm_lang$core$Date$month(info.date)) ? {
+					ctor: '::',
+					_0: _elm_lang$core$Native_Utils.update(
+						_p5,
+						{
+							days: {ctor: '::', _0: info, _1: _p5.days}
+						}),
+					_1: _p4._0._1
+				} : {
+					ctor: '::',
+					_0: startMonth(info),
+					_1: res
+				};
+			}
+		});
+	var splitMonths = A2(
+		_elm_lang$core$List$foldr,
+		aggMonth,
+		{ctor: '[]'});
+	return splitMonths(
+		_spraints$school_days$Calendar$makeDays(model));
+};
+
 var _spraints$school_days$Main$groupWhile = F2(
 	function (keepGrouping, xs) {
 		var prepend = F2(
@@ -9024,141 +9159,6 @@ var _spraints$school_days$Main$groupWhile = F2(
 			return {ctor: '::', _0: _p5._0, _1: _p5._1};
 		}
 	});
-var _spraints$school_days$Main$uncons = function (list) {
-	var _p6 = list;
-	if (_p6.ctor === '[]') {
-		return _elm_lang$core$Maybe$Nothing;
-	} else {
-		return _elm_lang$core$Maybe$Just(
-			{ctor: '_Tuple2', _0: _p6._0, _1: _p6._1});
-	}
-};
-var _spraints$school_days$Main$alwaysInt = function (_p7) {
-	var _p8 = _p7;
-	var _p9 = _p8._1;
-	if (_p9.ctor === 'Err') {
-		return 0;
-	} else {
-		return _p9._0;
-	}
-};
-var _spraints$school_days$Main$makeDays = function (model) {
-	var whatIs = function (info) {
-		return _spraints$school_days$DateHelpers$isWeekend(info.date) ? _spraints$school_days$Calendar$Weekend : (A2(
-			_elm_lang$core$Set$member,
-			_spraints$school_days$Types$toComparableDate(info.date),
-			model.days_to_skip) ? _spraints$school_days$Calendar$NoSchool : ((_elm_lang$core$Native_Utils.cmp(
-			info.completed,
-			_spraints$school_days$Main$alwaysInt(model.days_required)) < 0) ? _spraints$school_days$Calendar$School(info.completed + 1) : _spraints$school_days$Calendar$Weekend));
-	};
-	var makeDay = function (info) {
-		return {
-			date: info.date,
-			what: whatIs(info)
-		};
-	};
-	var firstDayInfo = F2(
-		function (today, model) {
-			return {
-				date: today,
-				completed: _spraints$school_days$Main$alwaysInt(model.days_finished),
-				skipped: model.days_to_skip
-			};
-		});
-	var nextDayInfo = F2(
-		function (info, d) {
-			return _elm_lang$core$Native_Utils.update(
-				info,
-				{
-					date: _spraints$school_days$DateHelpers$addDay(info.date),
-					completed: function () {
-						var _p10 = d.what;
-						if (_p10.ctor === 'School') {
-							return _p10._0;
-						} else {
-							return info.completed;
-						}
-					}()
-				});
-		});
-	var makeDaysRec = F3(
-		function (res, currentYear, info) {
-			makeDaysRec:
-			while (true) {
-				if (!_elm_lang$core$Native_Utils.eq(
-					_elm_lang$core$Date$year(info.date),
-					currentYear)) {
-					return _elm_lang$core$List$reverse(res);
-				} else {
-					var d = makeDay(info);
-					var _v7 = {ctor: '::', _0: d, _1: res},
-						_v8 = currentYear,
-						_v9 = A2(nextDayInfo, info, d);
-					res = _v7;
-					currentYear = _v8;
-					info = _v9;
-					continue makeDaysRec;
-				}
-			}
-		});
-	var _p11 = model.today;
-	if (_p11.ctor === 'Nothing') {
-		return {ctor: '[]'};
-	} else {
-		var _p12 = _p11._0;
-		return A3(
-			makeDaysRec,
-			{ctor: '[]'},
-			_elm_lang$core$Date$year(_p12),
-			A2(firstDayInfo, _p12, model));
-	}
-};
-var _spraints$school_days$Main$makeCalendar = function (model) {
-	var startMonth = function (info) {
-		return {
-			month: _elm_lang$core$Date$month(info.date),
-			days: {
-				ctor: '::',
-				_0: info,
-				_1: {ctor: '[]'}
-			}
-		};
-	};
-	var aggMonth = F2(
-		function (info, res) {
-			var _p13 = _spraints$school_days$Main$uncons(res);
-			if (_p13.ctor === 'Nothing') {
-				return {
-					ctor: '::',
-					_0: startMonth(info),
-					_1: {ctor: '[]'}
-				};
-			} else {
-				var _p14 = _p13._0._0;
-				return _elm_lang$core$Native_Utils.eq(
-					_p14.month,
-					_elm_lang$core$Date$month(info.date)) ? {
-					ctor: '::',
-					_0: _elm_lang$core$Native_Utils.update(
-						_p14,
-						{
-							days: {ctor: '::', _0: info, _1: _p14.days}
-						}),
-					_1: _p13._0._1
-				} : {
-					ctor: '::',
-					_0: startMonth(info),
-					_1: res
-				};
-			}
-		});
-	var splitMonths = A2(
-		_elm_lang$core$List$foldr,
-		aggMonth,
-		{ctor: '[]'});
-	return splitMonths(
-		_spraints$school_days$Main$makeDays(model));
-};
 var _spraints$school_days$Main$renderWeek = function (days) {
 	var weekAct = F2(
 		function (act, label) {
@@ -9203,8 +9203,8 @@ var _spraints$school_days$Main$renderWeek = function (days) {
 			}
 		});
 	var act = function (day) {
-		var _p15 = day.what;
-		switch (_p15.ctor) {
+		var _p6 = day.what;
+		switch (_p6.ctor) {
 			case 'School':
 				return _spraints$school_days$Types$SkipDay(day.date);
 			case 'NoSchool':
@@ -9214,12 +9214,12 @@ var _spraints$school_days$Main$renderWeek = function (days) {
 		}
 	};
 	var dayDesc = function (day) {
-		var _p16 = day.what;
-		switch (_p16.ctor) {
+		var _p7 = day.what;
+		switch (_p7.ctor) {
 			case 'School':
 				return A2(
 					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString(_p16._0),
+					_elm_lang$core$Basics$toString(_p7._0),
 					' days');
 			case 'NoSchool':
 				return '(skip)';
@@ -9228,8 +9228,8 @@ var _spraints$school_days$Main$renderWeek = function (days) {
 		}
 	};
 	var whatClass = function (day) {
-		var _p17 = day.what;
-		switch (_p17.ctor) {
+		var _p8 = day.what;
+		switch (_p8.ctor) {
 			case 'NoSchool':
 				return 'no-school';
 			case 'Weekend':
@@ -9281,8 +9281,8 @@ var _spraints$school_days$Main$renderWeek = function (days) {
 	};
 	var htmlDays = A2(_elm_lang$core$List$map, htmlDay, days);
 	var padCountFor = function (date) {
-		var _p18 = _elm_lang$core$Date$dayOfWeek(date);
-		if (_p18.ctor === 'Sun') {
+		var _p9 = _elm_lang$core$Date$dayOfWeek(date);
+		if (_p9.ctor === 'Sun') {
 			return 0;
 		} else {
 			return 1 + padCountFor(
@@ -9290,11 +9290,11 @@ var _spraints$school_days$Main$renderWeek = function (days) {
 		}
 	};
 	var padCount = function () {
-		var _p19 = _elm_lang$core$List$head(days);
-		if (_p19.ctor === 'Nothing') {
+		var _p10 = _elm_lang$core$List$head(days);
+		if (_p10.ctor === 'Nothing') {
 			return 0;
 		} else {
-			return padCountFor(_p19._0.date);
+			return padCountFor(_p10._0.date);
 		}
 	}();
 	var pad = A2(
@@ -9309,11 +9309,11 @@ var _spraints$school_days$Main$renderWeek = function (days) {
 			},
 			{ctor: '[]'}));
 	var firstDOW = function () {
-		var _p20 = _elm_lang$core$List$head(days);
-		if (_p20.ctor === 'Nothing') {
+		var _p11 = _elm_lang$core$List$head(days);
+		if (_p11.ctor === 'Nothing') {
 			return _elm_lang$core$Date$Sun;
 		} else {
-			return _elm_lang$core$Date$dayOfWeek(_p20._0.date);
+			return _elm_lang$core$Date$dayOfWeek(_p11._0.date);
 		}
 	}();
 	return A2(
@@ -9380,7 +9380,7 @@ var _spraints$school_days$Main$renderMonth = function (month) {
 			}
 		});
 	var notSunday = F2(
-		function (info, _p21) {
+		function (info, _p12) {
 			return !_elm_lang$core$Native_Utils.eq(
 				_elm_lang$core$Date$Sat,
 				_elm_lang$core$Date$dayOfWeek(info.date));
@@ -9404,7 +9404,7 @@ var _spraints$school_days$Main$renderMonth = function (month) {
 				A2(_spraints$school_days$Main$groupWhile, notSunday, month.days))));
 };
 var _spraints$school_days$Main$calendarView = function (model) {
-	var months = _spraints$school_days$Main$makeCalendar(model);
+	var months = _spraints$school_days$Calendar$makeCalendar(model);
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
@@ -9412,8 +9412,8 @@ var _spraints$school_days$Main$calendarView = function (model) {
 };
 var _spraints$school_days$Main$configView = function (model) {
 	var configError = function (val) {
-		var _p22 = val;
-		if (_p22.ctor === 'Ok') {
+		var _p13 = val;
+		if (_p13.ctor === 'Ok') {
 			return _elm_lang$html$Html$text('');
 		} else {
 			return A2(
@@ -9425,14 +9425,14 @@ var _spraints$school_days$Main$configView = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(_p22._0),
+					_0: _elm_lang$html$Html$text(_p13._0),
 					_1: {ctor: '[]'}
 				});
 		}
 	};
 	var configLine = F3(
-		function (prompt, _p23, mkmsg) {
-			var _p24 = _p23;
+		function (prompt, _p14, mkmsg) {
+			var _p15 = _p14;
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -9482,7 +9482,7 @@ var _spraints$school_days$Main$configView = function (model) {
 											_0: _elm_lang$html$Html_Events$onInput(mkmsg),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$value(_p24._0),
+												_0: _elm_lang$html$Html_Attributes$value(_p15._0),
 												_1: {ctor: '[]'}
 											}
 										},
@@ -9500,7 +9500,7 @@ var _spraints$school_days$Main$configView = function (model) {
 									},
 									{
 										ctor: '::',
-										_0: configError(_p24._1),
+										_0: configError(_p15._1),
 										_1: {ctor: '[]'}
 									}),
 								_1: {ctor: '[]'}
@@ -9549,8 +9549,8 @@ var _spraints$school_days$Main$view = function (model) {
 };
 var _spraints$school_days$Main$flagify = function (model) {
 	return {
-		finished: _spraints$school_days$Main$alwaysInt(model.days_finished),
-		required: _spraints$school_days$Main$alwaysInt(model.days_required),
+		finished: _spraints$school_days$Types$alwaysInt(model.days_finished),
+		required: _spraints$school_days$Types$alwaysInt(model.days_required),
 		skips: _elm_lang$core$Set$toList(model.days_to_skip),
 		start: A2(_elm_lang$core$Maybe$map, _elm_lang$core$Date$toTime, model.today)
 	};
@@ -9570,9 +9570,9 @@ var _spraints$school_days$Main$adjustFinished = F2(
 				if (_elm_lang$core$Native_Utils.cmp(
 					_spraints$school_days$Types$toComparableDate(day.date),
 					compNewToday) < 0) {
-					var _p25 = day.what;
-					if (_p25.ctor === 'School') {
-						return _spraints$school_days$Main$intAsIntInput(_p25._0);
+					var _p16 = day.what;
+					if (_p16.ctor === 'School') {
+						return _spraints$school_days$Main$intAsIntInput(_p16._0);
 					} else {
 						return res;
 					}
@@ -9580,17 +9580,17 @@ var _spraints$school_days$Main$adjustFinished = F2(
 					return res;
 				}
 			});
-		var _p26 = model.today;
-		if (_p26.ctor === 'Nothing') {
+		var _p17 = model.today;
+		if (_p17.ctor === 'Nothing') {
 			return model.days_finished;
 		} else {
 			return (!_elm_lang$core$Native_Utils.eq(
-				_elm_lang$core$Date$year(_p26._0),
+				_elm_lang$core$Date$year(_p17._0),
 				_elm_lang$core$Date$year(newToday))) ? _spraints$school_days$Main$intAsIntInput(0) : A3(
 				_elm_lang$core$List$foldl,
 				accum,
 				model.days_finished,
-				_spraints$school_days$Main$makeDays(model));
+				_spraints$school_days$Calendar$makeDays(model));
 		}
 	});
 var _spraints$school_days$Main$unflagify = function (flags) {
@@ -9651,29 +9651,29 @@ var _spraints$school_days$Main$saveModel = _elm_lang$core$Native_Platform.outgoi
 var _spraints$school_days$Main$update = F2(
 	function (msg, model) {
 		var updated_model = function () {
-			var _p27 = msg;
-			switch (_p27.ctor) {
+			var _p18 = msg;
+			switch (_p18.ctor) {
 				case 'Noop':
 					return model;
 				case 'SetToday':
-					var _p28 = _p27._0;
+					var _p19 = _p18._0;
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							today: _elm_lang$core$Maybe$Just(_p28),
-							days_finished: A2(_spraints$school_days$Main$adjustFinished, model, _p28)
+							today: _elm_lang$core$Maybe$Just(_p19),
+							days_finished: A2(_spraints$school_days$Main$adjustFinished, model, _p19)
 						});
 				case 'UpdateDaysFinished':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							days_finished: _spraints$school_days$Main$parseIntInput(_p27._0)
+							days_finished: _spraints$school_days$Main$parseIntInput(_p18._0)
 						});
 				case 'UpdateDaysRequired':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							days_required: _spraints$school_days$Main$parseIntInput(_p27._0)
+							days_required: _spraints$school_days$Main$parseIntInput(_p18._0)
 						});
 				case 'SkipDay':
 					return _elm_lang$core$Native_Utils.update(
@@ -9681,7 +9681,7 @@ var _spraints$school_days$Main$update = F2(
 						{
 							days_to_skip: A2(
 								_elm_lang$core$Set$insert,
-								_spraints$school_days$Types$toComparableDate(_p27._0),
+								_spraints$school_days$Types$toComparableDate(_p18._0),
 								model.days_to_skip)
 						});
 				case 'UnskipDay':
@@ -9690,7 +9690,7 @@ var _spraints$school_days$Main$update = F2(
 						{
 							days_to_skip: A2(
 								_elm_lang$core$Set$remove,
-								_spraints$school_days$Types$toComparableDate(_p27._0),
+								_spraints$school_days$Types$toComparableDate(_p18._0),
 								model.days_to_skip)
 						});
 				case 'SkipDays':
@@ -9701,7 +9701,7 @@ var _spraints$school_days$Main$update = F2(
 								_elm_lang$core$Set$union,
 								model.days_to_skip,
 								_elm_lang$core$Set$fromList(
-									A2(_elm_lang$core$List$map, _spraints$school_days$Types$toComparableDate, _p27._0)))
+									A2(_elm_lang$core$List$map, _spraints$school_days$Types$toComparableDate, _p18._0)))
 						});
 				default:
 					return _elm_lang$core$Native_Utils.update(
@@ -9711,7 +9711,7 @@ var _spraints$school_days$Main$update = F2(
 								_elm_lang$core$Set$diff,
 								model.days_to_skip,
 								_elm_lang$core$Set$fromList(
-									A2(_elm_lang$core$List$map, _spraints$school_days$Types$toComparableDate, _p27._0)))
+									A2(_elm_lang$core$List$map, _spraints$school_days$Types$toComparableDate, _p18._0)))
 						});
 			}
 		}();

@@ -43,3 +43,9 @@ toComparableDate date =
         Date.Dec -> 12
   in
     (monthNum <| Date.month date, Date.day date)
+
+alwaysInt : IntInput -> Int
+alwaysInt (_, res) =
+  case res of
+    Err _ -> 0
+    Ok n -> n
