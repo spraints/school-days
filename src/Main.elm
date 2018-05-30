@@ -10,8 +10,6 @@ import Set exposing (Set)
 import Task exposing (perform)
 import Time exposing (Time, hour)
 
-import Debug
-
 import Calendar
 import Types exposing (..)
 
