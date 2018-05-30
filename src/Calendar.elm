@@ -6,6 +6,7 @@ import Set
 
 import Types exposing (..)
 import DateHelpers exposing (addDay, isWeekend)
+import ListHelpers exposing (uncons)
 
 type alias Calendar = List Month
 type alias Month = { month : Date.Month, days : List Day }
@@ -82,11 +83,3 @@ makeCalendar model =
       List.foldr aggMonth []
   in
     makeDays model |> splitMonths
-
--- exactly like
--- https://github.com/elm-community/list-extra/blob/36b63fc2ab1b1b602a30dbc71e9b829a0f325e21/src/List/Extra.elm#L285-L298
-uncons : List a -> Maybe (a, List a)
-uncons list =
-  case list of
-    [] -> Nothing
-    x :: xs -> Just ( x, xs )
