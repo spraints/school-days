@@ -23,6 +23,7 @@ type alias Flags =
 port title : String -> Cmd a
 port saveModel : Flags -> Cmd a
 
+main : Program Flags Model Msg
 main = Html.programWithFlags
   { init = init
   , subscriptions = sub
@@ -284,13 +285,15 @@ makeCalendar model =
   in
     makeDays model |> splitMonths
 
-
+addDay : Date -> Date
 addDay date =
   Date.fromTime <| 24 * hour + (Date.toTime date)
 
+subDay : Date -> Date
 subDay date =
   Date.fromTime <| (Date.toTime date) - 24 * hour
 
+isWeekend : Date -> Bool
 isWeekend date =
   case Date.dayOfWeek date of
     Date.Mon -> False

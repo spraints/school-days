@@ -13,7 +13,7 @@ share: $(SHARE_JS) $(SHARE_HTML)
 export PATH := node_modules/.bin:$(PATH)
 
 school-days-left.js: src/*.elm
-	env PATH=$(PATH) elm make src/Main.elm --yes --output school-days-left.js
+	env PATH=$(PATH) elm make src/Main.elm --warn --yes --output school-days-left.js
 
 $(SHARE_JS): school-days-left.js
 	cp school-days-left.js ~/Downloads/school-days-left.js
