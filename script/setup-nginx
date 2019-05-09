@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+set -o nounset
+
+root=$(cd $(dirname $0)/..; pwd -P)
+confdir=${root}/config
+conffile=${confdir}/nginx.conf
+conflink=/etc/nginx/sites-enabled/school-days
+
+mkdir -p ${confdir}
+cat <<NGINX >${conffile}
+server {
+  listen 80;
+  root ${root};
+  server_name school-days.localhost;
+}
+NGINX
+
+sudo rm -f ${conflink}
+sudo ln -s ${conffile} ${conflink}
+sudo systemctl reload nginx
+
