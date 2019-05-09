@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd $(dirname $0)/../r
+exec npm run build
+# todo - push build to gh-pages branch (maybe in another script)

@@ -1,6 +1,7 @@
 {
   "name": "r",
   "version": "0.1.0",
+  "homepage": "https://pickardayune.com/school-days",
   "private": true,
   "dependencies": {
     "react": "^16.8.6",

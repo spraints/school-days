@@ -10,10 +10,23 @@ conflink=/etc/nginx/sites-enabled/school-days
 
 mkdir -p ${confdir}
 cat <<NGINX >${conffile}
+upstream school-days {
+  server 127.0.0.1:3899;
+}
+
 server {
   listen 80;
-  root ${root};
   server_name school-days.localhost;
+  root ${root};
+}
+
+server {
+  listen 80;
+  server_name school-days-react.localhost;
+  root ${root}/r/public;
+  location / {
+    proxy_pass http://school-days;
+  }
 }
 NGINX
 
