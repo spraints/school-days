@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import 'bootstrap/dist/css/bootstrap.css'; // https://facebook.github.io/create-react-app/docs/adding-bootstrap
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
