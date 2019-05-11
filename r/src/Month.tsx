@@ -9,11 +9,11 @@ type Props = {
 
 function Month(props: Props) {
   return (
-    <div>
+    <div className="month">
       <div className="row">
         <div className="col month-name">{props.name}</div>
       </div>
-      <div className="row">
+      <div className="row day-names">
         <div className="col"></div>
         <div className="col day-name">Sun</div>
         <div className="col day-name">Mon</div>

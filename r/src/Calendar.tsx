@@ -8,7 +8,7 @@ type Props = {
 
 function Calendar(props: Props) {
   return (
-    <div>
+    <div className="calendar">
       {props.months.map(month => <Month name={month.month} weeks={month.weeks} />)}
     </div>
   )
