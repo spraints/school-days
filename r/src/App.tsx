@@ -13,7 +13,7 @@ type State = {
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = {calendar: generateCalendar()};
+    this.state = {calendar: generateCalendar(new Date())};
   }
 
   render() {
