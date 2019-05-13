@@ -8,12 +8,26 @@ import generateCalendar from './generate-calendar';
 type Props = any
 type State = {
   calendar: Array<MonthData>
+  requiredDays: number
+  completedDays: number
 }
 
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = {calendar: generateCalendar(new Date())};
+    this.state = {
+      calendar: generateCalendar(new Date()),
+      requiredDays: 180,
+      completedDays: 0
+    };
+  }
+
+  setRequiredDays(n: number) {
+    this.setState({requiredDays: n})
+  }
+
+  setCompletedDays(n: number) {
+    this.setState({completedDays: n})
   }
 
   onSkip(days: Array<MonthDay>) {
@@ -50,14 +64,16 @@ class App extends React.Component<Props, State> {
   render() {
     const actions = {
       onSkip: this.onSkip.bind(this),
-      onUnskip: this.onUnskip.bind(this)
+      onUnskip: this.onUnskip.bind(this),
+      setCompletedDays: this.setCompletedDays.bind(this),
+      setRequiredDays: this.setRequiredDays.bind(this)
     }
     return (
       <div className="container">
         <div className="jumbotron">
           <h1 className="display-4">School Days</h1>
           <div className="container">
-            <Inputs/>
+            <Inputs completedDays={this.state.completedDays} requiredDays={this.state.requiredDays} actions={actions} />
           </div>
         </div>
         <Calendar months={this.state.calendar} actions={actions} />

@@ -29,6 +29,8 @@ export type MonthDay = {
 export type Actions = {
   onSkip: (days: Array<MonthDay>) => void
   onUnskip: (days: Array<MonthDay>) => void
+  setCompletedDays: (days: number) => void
+  setRequiredDays: (days: number) => void
 }
 
 export type ActionsProps = {
