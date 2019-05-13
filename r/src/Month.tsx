@@ -1,17 +1,14 @@
 import React from 'react';
 import Week from './Week';
-import {ActionsProps, WeekData} from './Types';
+import {ActionsProps, CalendarMonth} from './Types';
 
-type Props = ActionsProps & {
-  name: string
-  weeks: Array<WeekData>
-}
+type Props = ActionsProps & CalendarMonth
 
 function Month(props: Props) {
   return (
     <div className="month">
       <div className="row">
-        <div className="col month-name">{props.name}</div>
+        <div className="col month-name">{props.month}</div>
       </div>
       <div className="row day-names">
         <div className="col"></div>
@@ -23,7 +20,7 @@ function Month(props: Props) {
         <div className="col day-name">Fri</div>
         <div className="col day-name">Sat</div>
       </div>
-      {props.weeks.map(week => <Week month={props.name} days={week} actions={props.actions} />)}
+      {props.weeks.map(week => <Week month={props.month} week={week} actions={props.actions} />)}
     </div>
   )
 }

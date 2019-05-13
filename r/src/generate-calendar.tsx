@@ -1,52 +1,37 @@
-import {MonthData, WeekData} from './Types';
+import {CalendarMonth, CalendarWeek, DayOfWeek, Month} from './Types';
 
-export default function generateCalendar(start: Date): Array<MonthData> {
-  return generateMonths(start, [])
+export default function generateCalendar(start: Date): Array<CalendarMonth> {
+  const days = generateDays(start)
+  return collectMonths(days)
 }
 
-function generateMonths(date: Date, res: Array<MonthData>): Array<MonthData> {
-  const {nextDate, month} = generateMonth(date)
-  res.push(month)
-  if (nextDate.getFullYear() !== date.getFullYear())
-    return res
-  return generateMonths(nextDate, res)
-}
-
-const MONTH_NAME = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-
-function generateMonth(date: Date): {nextDate: Date, month: MonthData} {
-  const {nextDate, weeks} = generateWeeks(date, [])
-  const month = {month: MONTH_NAME[date.getMonth()], weeks}
-  return {nextDate, month}
-}
-
-function generateWeeks(date: Date, weeks: Array<WeekData>): {nextDate: Date, weeks: Array<WeekData>} {
-  const {nextDate, week} = generateWeek(date)
-  weeks.push(week)
-  if (nextDate.getMonth() !== date.getMonth())
-    return {nextDate, weeks}
-  return generateWeeks(nextDate, weeks)
-}
-
-function generateWeek(date: Date): {nextDate: Date, week: WeekData} {
-  const week = []
-  let i = 0
-  for (; i < date.getDay(); i++) {
-    week.push(null)
+function generateDays(start: Date): Array<Date> {
+  const result = []
+  for (let date = start; date.getFullYear() === start.getFullYear(); date = addDays(date, 1)) {
+    result.push(date)
   }
-  let nextDate = date
-  for (; i < 7 && nextDate.getMonth() === date.getMonth(); i++) {
-    week.push({
-      day: nextDate.getDate(),
-      dow: nextDate.getDay(),
-      skipped: false
-    })
-    nextDate = addDays(nextDate, 1)
+  return result
+}
+
+function collectMonths(days: Array<Date>): Array<CalendarMonth> {
+  if (days.length === 0) return []
+  const result: Array<CalendarMonth> = []
+  let currentMonth: null | CalendarMonth = null
+  let currentWeek = {} as CalendarWeek
+  for (const day of days) {
+    let month: Month = day.getMonth()
+    let dow: DayOfWeek = day.getDay()
+    if (currentMonth === null || currentMonth.month !== month) {
+      currentWeek = {}
+      currentMonth = {month, weeks: [currentWeek]}
+      result.push(currentMonth)
+    } else if (dow === DayOfWeek.Sunday) {
+      currentWeek = {}
+      currentMonth.weeks.push(currentWeek)
+    }
+    currentWeek[dow] = day
   }
-  for (; i < 7; i++) {
-    week.push(null)
-  }
-  return {nextDate, week}
+  return result
 }
 
 function addDays(date: Date, offset: number): Date {

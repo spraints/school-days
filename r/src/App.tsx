@@ -2,12 +2,18 @@ import React from 'react';
 import './App.css';
 import Inputs from './Inputs';
 import Calendar from './Calendar';
-import {MonthData, MonthDay} from './Types';
+import {CalendarMonth, Month} from './Types';
 import generateCalendar from './generate-calendar';
 
-type Props = any
+type Skip = {
+  month: Month
+  day: number
+}
+
+type Props = {}
 type State = {
-  calendar: Array<MonthData>
+  calendar: Array<CalendarMonth>
+  skips: Array<Skip>
   requiredDays: number
   completedDays: number
 }
@@ -17,6 +23,7 @@ class App extends React.Component<Props, State> {
     super(props);
     this.state = {
       calendar: generateCalendar(new Date()),
+      skips: [],
       requiredDays: 180,
       completedDays: 0
     };
@@ -30,41 +37,27 @@ class App extends React.Component<Props, State> {
     this.setState({completedDays: n})
   }
 
-  onSkip(days: Array<MonthDay>) {
-    this.updateSkips(true, days)
-  }
-
-  onUnskip(days: Array<MonthDay>) {
-    this.updateSkips(false, days)
-  }
-
-  updateSkips(newValue: boolean, days: Array<MonthDay>) {
-    const matcher = this.makeMatcher(days)
-    const calendar = this.state.calendar.map(md => ({
-      month: md.month,
-      weeks: md.weeks.map(wd => wd.map(dd => (dd && {
-        day: dd.day,
-        dow: dd.dow,
-        skipped: matcher(md.month, dd.day) ? newValue : dd.skipped
-      })))
+  onSkip(days: Array<Date>) {
+    const newSkips = days.map(day => ({
+      month: day.getMonth() as Month,
+      day: day.getDate()
     }))
-    this.setState({calendar})
+    this.setState({skips: this.state.skips.concat(newSkips)})
   }
 
-  makeMatcher(days: Array<MonthDay>): (month: string, day: number) => boolean {
-    const hits: {[month: string]: {[day: number]: boolean}} = {}
-    days.forEach(day => {
-      if (!hits[day.month])
-        hits[day.month] = {}
-      hits[day.month][day.day] = true
-    })
-    return (month: string, day: number) => (hits[month] && hits[month][day]) || false
+  onUnskip(days: Array<Date>) {
+    let skips = this.state.skips
+    for (const day of days) {
+      skips = skips.filter(skip => skip.month !== day.getMonth() || skip.day !== day.getDate())
+    }
+    this.setState({skips})
   }
 
   render() {
+    console.log(this.state.skips)
     const actions = {
-      onSkip: this.onSkip.bind(this),
-      onUnskip: this.onUnskip.bind(this),
+      skip: this.onSkip.bind(this),
+      unskip: this.onUnskip.bind(this),
       setCompletedDays: this.setCompletedDays.bind(this),
       setRequiredDays: this.setRequiredDays.bind(this)
     }

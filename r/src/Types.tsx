@@ -1,3 +1,10 @@
+export type CalendarMonth = {
+  month: Month
+  weeks: Array<CalendarWeek>
+}
+
+export type CalendarWeek = { [id: number]: Date }
+
 export enum DayOfWeek {
   Sunday = 0,
   Monday,
@@ -8,27 +15,24 @@ export enum DayOfWeek {
   Saturday,
 }
 
-export type DayData = {
-  day: number
-  dow: DayOfWeek
-  skipped: boolean
-}
-
-export type WeekData = Array<null | DayData>
-
-export type MonthData = {
-  month: string
-  weeks: Array<WeekData>
-};
-
-export type MonthDay = {
-  month: string
-  day: number
+export enum Month {
+  January = 0,
+  February,
+  March,
+  April,
+  May,
+  June,
+  July,
+  August,
+  September,
+  October,
+  November,
+  December
 }
 
 export type Actions = {
-  onSkip: (days: Array<MonthDay>) => void
-  onUnskip: (days: Array<MonthDay>) => void
+  skip: (days: Array<Date>) => void
+  unskip: (days: Array<Date>) => void
   setCompletedDays: (days: number) => void
   setRequiredDays: (days: number) => void
 }

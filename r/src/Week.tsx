@@ -1,65 +1,42 @@
 import React from 'react';
-import {ActionsProps, MonthDay, WeekData, DayData, DayOfWeek} from './Types';
+import {Actions, ActionsProps, CalendarWeek, DayOfWeek, Month} from './Types';
 import {Button} from './Inputs';
-import {filterNonNull} from './utils';
 
 type Props = ActionsProps & {
-  month: string
-  days: WeekData
+  month: Month
+  week: CalendarWeek
 }
+
+const dayOfWeekNumbers = Object.keys(DayOfWeek).map(dow => Number(dow)).filter(dow => !isNaN(dow))
 
 function Week(props: Props) {
   return (
     <div className="row week">
       <div className="col controls">
-        <Button action={act(props.actions.onSkip, props.month, props.days)}>
+        <Button action={() => props.actions.skip(Object.values(props.week))}>
           skip
         </Button>
-        <Button action={act(props.actions.onUnskip, props.month, props.days)}>
+        <Button action={() => props.actions.unskip(Object.values(props.week))}>
           unskip
         </Button>
       </div>
-      {props.days.map(day => <Day actions={props.actions} month={props.month} day={day} />)}
+      {dayOfWeekNumbers.map(dow => renderDay(props.week[dow as number], props.actions))}
     </div>
   )
 }
 
-type DayProps = ActionsProps & {
-  month: string
-  day: null | DayData
-}
-
-function Day(props: DayProps) {
-  const {day, month, actions} = props
-  if (day == null) {
-    return <div className="col"></div>;
-  } else if (day.dow === DayOfWeek.Sunday || day.dow === DayOfWeek.Saturday) {
+function renderDay(day: null | Date, actions: Actions) {
+  if (day) {
     return (
-      <div className="col day weekend">
-        <div className="dayNum">{day.day}</div>
+      <div className="col day">
+        <div className="dayNum">{day.getDate()}</div>
+        <Button action={() => actions.skip([day])}>skip</Button>
+        <Button action={() => actions.unskip([day])}>unskip</Button>
       </div>
-    );
-  } else if (day.skipped) {
-    return (
-      <div className="col day skipped">
-        <div className="dayNum">{day.day}</div>
-        <div className="content">NO SCHOOL</div>
-        <Button action={act(actions.onUnskip, month, [day])}>unskip</Button>
-      </div>
-    );
+    )
   } else {
-    return (
-      <div className="col day school">
-        <div className="dayNum">{day.day}</div>
-        <div className="content">SCHOOL</div>
-        <Button action={act(actions.onSkip, month, [day])}>skip</Button>
-      </div>
-    );
+    return <div className="col"></div>
   }
-}
-
-function act(fn: (days: Array<MonthDay>) => void, month: string, days: Array<null | DayData>) {
-  return () => fn(filterNonNull(days).map(day => ({month: month, day: day.day})))
 }
 
 export default Week

@@ -1,15 +1,17 @@
 import React from 'react';
 import Month from './Month';
-import {MonthData, ActionsProps} from './Types';
+import {ActionsProps, CalendarMonth} from './Types';
 
 type Props = ActionsProps & {
-  months: Array<MonthData>
+  months: Array<CalendarMonth>
 }
 
 function Calendar(props: Props) {
   return (
     <div className="calendar">
-      {props.months.map(month => <Month name={month.month} weeks={month.weeks} actions={props.actions} />)}
+      {props.months.map(month =>
+        <Month actions={props.actions} {...month} />
+      )}
     </div>
   )
 }
