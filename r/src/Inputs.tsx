@@ -1,11 +1,16 @@
 import React from 'react';
 
-export function SkipButton() {
-  return <div>(skip)</div>
+type ButtonProps = {
+  children?: any
+  action: () => void
 }
 
-export function UnskipButton() {
-  return <div>(unskip)</div>
+export function Button(props: ButtonProps) {
+  return (
+    <div>
+      <button type="button" className="btn btn-link" onClick={props.action}>{props.children}</button>
+    </div>
+  )
 }
 
 function Inputs() {

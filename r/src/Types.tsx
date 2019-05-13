@@ -20,3 +20,17 @@ export type MonthData = {
   month: string
   weeks: Array<WeekData>
 };
+
+export type MonthDay = {
+  month: string
+  day: number
+}
+
+export type Actions = {
+  onSkip: (days: Array<MonthDay>) => void
+  onUnskip: (days: Array<MonthDay>) => void
+}
+
+export type ActionsProps = {
+  actions: Actions
+}
