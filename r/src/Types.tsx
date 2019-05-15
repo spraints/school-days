@@ -1,9 +1,21 @@
+export type AppState = {
+  calendar: Array<CalendarMonth>
+  skips: Array<Skip>
+  requiredDays: number
+  completedDays: number
+}
+
+type Skip = {
+  month: Month
+  day: number
+}
+
 export type CalendarMonth = {
   month: Month
   weeks: Array<CalendarWeek>
 }
 
-export type CalendarWeek = { [id: number]: Date }
+export type CalendarWeek = { [dayOfWeek: number]: Date }
 
 export enum DayOfWeek {
   Sunday = 0,

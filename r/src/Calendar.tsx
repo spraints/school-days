@@ -1,9 +1,10 @@
 import React from 'react';
 import Month from './Month';
-import {ActionsProps, CalendarMonth} from './Types';
+import {ActionsProps} from './Types';
+import {SchoolCalendar} from './school-calendar';
 
 type Props = ActionsProps & {
-  months: Array<CalendarMonth>
+  months: SchoolCalendar
 }
 
 function Calendar(props: Props) {

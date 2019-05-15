@@ -1,8 +1,9 @@
 import React from 'react';
 import Week from './Week';
-import {ActionsProps, CalendarMonth} from './Types';
+import {ActionsProps} from './Types';
+import {SchoolMonth} from './school-calendar';
 
-type Props = ActionsProps & CalendarMonth
+type Props = ActionsProps & SchoolMonth
 
 function Month(props: Props) {
   return (

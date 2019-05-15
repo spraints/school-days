@@ -2,21 +2,12 @@ import React from 'react';
 import './App.css';
 import Inputs from './Inputs';
 import Calendar from './Calendar';
-import {CalendarMonth, Month} from './Types';
+import {AppState, Month} from './Types';
 import generateCalendar from './generate-calendar';
-
-type Skip = {
-  month: Month
-  day: number
-}
+import {assembleSchoolCalendar} from './school-calendar';
 
 type Props = {}
-type State = {
-  calendar: Array<CalendarMonth>
-  skips: Array<Skip>
-  requiredDays: number
-  completedDays: number
-}
+type State = AppState
 
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -61,6 +52,9 @@ class App extends React.Component<Props, State> {
       setCompletedDays: this.setCompletedDays.bind(this),
       setRequiredDays: this.setRequiredDays.bind(this)
     }
+
+    const schoolCalendar = assembleSchoolCalendar(this.state)
+
     return (
       <div className="container">
         <div className="jumbotron">
@@ -69,7 +63,7 @@ class App extends React.Component<Props, State> {
             <Inputs completedDays={this.state.completedDays} requiredDays={this.state.requiredDays} actions={actions} />
           </div>
         </div>
-        <Calendar months={this.state.calendar} actions={actions} />
+        <Calendar months={schoolCalendar} actions={actions} />
       </div>
     );
   }
