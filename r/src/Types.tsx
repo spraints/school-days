@@ -5,7 +5,7 @@ export type AppState = {
   completedDays: number
 }
 
-type Skip = {
+export type Skip = {
   month: Month
   day: number
 }

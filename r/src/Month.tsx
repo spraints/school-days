@@ -1,15 +1,15 @@
 import React from 'react';
 import Week from './Week';
-import {ActionsProps} from './Types';
+import {ActionsProps, Month} from './Types';
 import {SchoolMonth} from './school-calendar';
 
 type Props = ActionsProps & SchoolMonth
 
-function Month(props: Props) {
+function MonthElement(props: Props) {
   return (
     <div className="month">
       <div className="row">
-        <div className="col month-name">{props.month}</div>
+        <div className="col month-name">{Month[props.month]}</div>
       </div>
       <div className="row day-names">
         <div className="col"></div>
@@ -26,4 +26,4 @@ function Month(props: Props) {
   )
 }
 
-export default Month;
+export default MonthElement;

@@ -1,7 +1,7 @@
 import React from 'react';
 import {Actions, ActionsProps, DayOfWeek, Month} from './Types';
 import {Button} from './Inputs';
-import {SchoolDay, SchoolWeek} from './school-calendar'
+import {SchoolDay, SchoolDayType, SchoolWeek} from './school-calendar'
 
 type Props = ActionsProps & {
   month: Month
@@ -33,8 +33,9 @@ function days(week: SchoolWeek): Array<Date> {
 function renderDay(day: null | SchoolDay, actions: Actions) {
   if (day) {
     return (
-      <div className="col day">
+      <div className={"col day "+ SchoolDayType[day.sdType]}>
         <div className="dayNum">{day.date.getDate()}</div>
+        {day.schoolDayNumber !== undefined && <div>#{day.schoolDayNumber}</div>}
         <Button action={() => actions.skip([day.date])}>skip</Button>
         <Button action={() => actions.unskip([day.date])}>unskip</Button>
       </div>
