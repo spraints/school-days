@@ -34,11 +34,17 @@ function renderDay(day: null | SchoolDay, actions: Actions) {
   if (day) {
     return (
       <div className={"col-md-1 day "+ SchoolDayType[day.sdType]}>
-        <div className="day-name d-md-none">{DayOfWeek[day.date.getDay()]}</div>
-        <div className="day-num">{day.date.getDate()}</div>
-        {day.schoolDayNumber !== undefined && <div>#{day.schoolDayNumber}</div>}
-        <Button action={() => actions.skip([day.date])}>skip</Button>
-        <Button action={() => actions.unskip([day.date])}>unskip</Button>
+        <p>
+          <span className="day-name d-md-none">{DayOfWeek[day.date.getDay()]} </span>
+          <span className="day-date">{day.date.getDate()} </span>
+          {day.schoolDayNumber !== undefined && <span className="day-schooldaynum">#{day.schoolDayNumber}</span>}
+        </p>
+        {day.sdType !== SchoolDayType.Weekend && (
+          <div>
+            <Button action={() => actions.skip([day.date])}>skip</Button>
+            <Button action={() => actions.unskip([day.date])}>unskip</Button>
+          </div>
+        )}
       </div>
     )
   } else {

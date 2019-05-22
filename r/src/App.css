@@ -11,9 +11,14 @@
 }
 
 .day {
-  border: solid 1px black;
+  border: solid 1px #ccc;
+  border-radius: 4px;
 }
 
-.day.school {
-  background-color: green;
+.day.School {
+  background-color: #69bf69;
+}
+
+.day.Weekend, .day.Holiday  {
+  background-color: #c1c1c1;
 }
