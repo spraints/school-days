@@ -13,7 +13,7 @@ const dayOfWeekNumbers = Object.keys(DayOfWeek).map(dow => Number(dow)).filter(d
 function Week(props: Props) {
   return (
     <div className="row week">
-      <div className="col controls">
+      <div className="col-md-1 controls">
         <Button action={() => props.actions.skip(days(props.week))}>
           skip
         </Button>
@@ -33,15 +33,16 @@ function days(week: SchoolWeek): Array<Date> {
 function renderDay(day: null | SchoolDay, actions: Actions) {
   if (day) {
     return (
-      <div className={"col day "+ SchoolDayType[day.sdType]}>
-        <div className="dayNum">{day.date.getDate()}</div>
+      <div className={"col-md-1 day "+ SchoolDayType[day.sdType]}>
+        <div className="day-name d-md-none">{DayOfWeek[day.date.getDay()]}</div>
+        <div className="day-num">{day.date.getDate()}</div>
         {day.schoolDayNumber !== undefined && <div>#{day.schoolDayNumber}</div>}
         <Button action={() => actions.skip([day.date])}>skip</Button>
         <Button action={() => actions.unskip([day.date])}>unskip</Button>
       </div>
     )
   } else {
-    return <div className="col"></div>
+    return <div className="col-md-1"></div>
   }
 }
 
