@@ -1,6 +1,6 @@
 import React from 'react';
 import {Actions, ActionsProps, DayOfWeek, Month} from './Types';
-import {Button} from './Inputs';
+import {SkipButton, UnskipButton} from './Inputs';
 import {SchoolDay, SchoolDayType, SchoolWeek} from './school-calendar'
 
 type Props = ActionsProps & {
@@ -14,12 +14,8 @@ function Week(props: Props) {
   return (
     <div className="row week">
       <div className="col-md-1 controls">
-        <Button action={() => props.actions.skip(days(props.week))}>
-          skip
-        </Button>
-        <Button action={() => props.actions.unskip(days(props.week))}>
-          unskip
-        </Button>
+        <SkipButton action={() => props.actions.skip(days(props.week))} />
+        <UnskipButton action={() => props.actions.unskip(days(props.week))} />
       </div>
       {dayOfWeekNumbers.map(dow => renderDay(props.week[dow as number], props.actions))}
     </div>
@@ -39,16 +35,22 @@ function renderDay(day: null | SchoolDay, actions: Actions) {
           <span className="day-date">{day.date.getDate()} </span>
           {day.schoolDayNumber !== undefined && <span className="day-schooldaynum">#{day.schoolDayNumber}</span>}
         </p>
-        {day.sdType !== SchoolDayType.Weekend && (
-          <div>
-            <Button action={() => actions.skip([day.date])}>skip</Button>
-            <Button action={() => actions.unskip([day.date])}>unskip</Button>
-          </div>
-        )}
+        <DayAction day={day} actions={actions} />
       </div>
     )
   } else {
     return <div className="col-md-1"></div>
+  }
+}
+
+function DayAction(props: {day: SchoolDay, actions: Actions}) {
+  const {day, actions} = props
+  if (day.sdType === SchoolDayType.School) {
+    return <SkipButton action={() => actions.skip([day.date])} />
+  } else if (day.sdType === SchoolDayType.Break) {
+    return <UnskipButton action={() => actions.unskip([day.date])} />
+  } else {
+    return <div></div>
   }
 }
 

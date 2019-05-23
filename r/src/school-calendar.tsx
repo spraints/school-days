@@ -9,7 +9,8 @@ export type SchoolMonth = {
 
 export enum SchoolDayType {
   School,
-  Holiday,
+  Break,    // a day off in the middle of the school year.
+  Vacation, // school year is finished!
   Weekend
 }
 
@@ -62,10 +63,15 @@ function assembleWeek(week: CalendarWeek, state: InternalState): {week: SchoolWe
         date: week[dow],
         sdType: SchoolDayType.Weekend
       }
-    } else if (state.skips[idx(week[dow].getMonth(), week[dow].getDate())] || state.completedDays >= state.requiredDays) {
+    } else if (state.completedDays >= state.requiredDays) {
       ret[dow] = {
         date: week[dow],
-        sdType: SchoolDayType.Holiday
+        sdType: SchoolDayType.Vacation
+      }
+    } else if (state.skips[idx(week[dow].getMonth(), week[dow].getDate())]) {
+      ret[dow] = {
+        date: week[dow],
+        sdType: SchoolDayType.Break
       }
     } else {
       ret[dow] = {

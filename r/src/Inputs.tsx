@@ -2,15 +2,18 @@ import React from 'react';
 import {ActionsProps} from './Types';
 
 type ButtonProps = {
-  children?: any
   action: () => void
 }
 
-export function Button(props: ButtonProps) {
+export function UnskipButton(props: ButtonProps) {
   return (
-    <div>
-      <button type="button" className="btn btn-link" onClick={props.action}>{props.children}</button>
-    </div>
+    <button type="button" className="btn btn-success" onClick={props.action}>+</button>
+  )
+}
+
+export function SkipButton(props: ButtonProps) {
+  return (
+    <button type="button" className="btn btn-warning" onClick={props.action}>-</button>
   )
 }
 
