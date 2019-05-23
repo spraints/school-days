@@ -13,13 +13,33 @@ const dayOfWeekNumbers = Object.keys(DayOfWeek).map(dow => Number(dow)).filter(d
 function Week(props: Props) {
   return (
     <div className="row week">
+      <WeekActions {...props} />
+      {dayOfWeekNumbers.map(dow => renderDay(props.week[dow as number], props.actions))}
+    </div>
+  )
+}
+
+function WeekActions(props: Props) {
+  if (hasActionableDays(props.week)) {
+    return (
       <div className="col-md-2 controls">
         <SkipButton action={() => props.actions.skip(days(props.week))} />
         <UnskipButton action={() => props.actions.unskip(days(props.week))} />
       </div>
-      {dayOfWeekNumbers.map(dow => renderDay(props.week[dow as number], props.actions))}
-    </div>
-  )
+    )
+  } else {
+    return <div className="col-md-2 controls"></div>
+  }
+}
+
+function hasActionableDays(week: SchoolWeek): boolean {
+  for (const dow in week) {
+    const sdType = week[dow].sdType
+    if (sdType === SchoolDayType.School || sdType === SchoolDayType.Break) {
+      return true
+    }
+  }
+  return false
 }
 
 function days(week: SchoolWeek): Array<Date> {
