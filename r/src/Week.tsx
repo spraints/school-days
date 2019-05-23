@@ -13,7 +13,7 @@ const dayOfWeekNumbers = Object.keys(DayOfWeek).map(dow => Number(dow)).filter(d
 function Week(props: Props) {
   return (
     <div className="row week">
-      <div className="col-md-1 controls">
+      <div className="col-md-2 controls">
         <SkipButton action={() => props.actions.skip(days(props.week))} />
         <UnskipButton action={() => props.actions.unskip(days(props.week))} />
       </div>
