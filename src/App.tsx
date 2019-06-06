@@ -63,7 +63,14 @@ class App extends React.Component<Props, State> {
             <Inputs completedDays={this.state.completedDays} requiredDays={this.state.requiredDays} actions={actions} />
           </div>
         </div>
+
         <Calendar months={schoolCalendar} actions={actions} />
+
+        <nav className="navbar navbar-light bg-light">
+          <span className="navbar-text">
+            <a href="https://github.com/spraints/school-days">source</a>
+          </span>
+        </nav>
       </div>
     );
   }
