@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ "x$IN_DOCKER" = "x1" ]; then
+  exec "$@"
+fi
+
+root=$(cd $(dirname $0)/..; pwd -P)
+
+xtra=
+if [ -n "$PORT" ]; then
+  xtra="--net host -e PORT=$PORT"
+fi
+
+exec docker run -it --rm \
+  -u $(id -u):$(id -g) \
+  -v ${root}:${root} \
+  -w $(pwd -P) \
+  -e IN_DOCKER=1 $xtra \
+  node:10-slim "$@"

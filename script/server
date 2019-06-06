@@ -1,5 +1,4 @@
 #!/bin/bash
 
-cd $(dirname $0)/../r
 export PORT=3899
-exec npm start
+exec $(dirname $0)/run npm start
