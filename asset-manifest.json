@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/school-days/static/css/main.7f9ad7a2.chunk.css",
+    "main.js": "/school-days/static/js/main.74c610af.chunk.js",
+    "main.js.map": "/school-days/static/js/main.74c610af.chunk.js.map",
+    "runtime~main.js": "/school-days/static/js/runtime~main.6384ee24.js",
+    "runtime~main.js.map": "/school-days/static/js/runtime~main.6384ee24.js.map",
+    "static/css/2.22a7d4ef.chunk.css": "/school-days/static/css/2.22a7d4ef.chunk.css",
+    "static/js/2.b0f4c8b7.chunk.js": "/school-days/static/js/2.b0f4c8b7.chunk.js",
+    "static/js/2.b0f4c8b7.chunk.js.map": "/school-days/static/js/2.b0f4c8b7.chunk.js.map",
+    "index.html": "/school-days/index.html",
+    "precache-manifest.261d57768d28da59893d9ac604aa20fd.js": "/school-days/precache-manifest.261d57768d28da59893d9ac604aa20fd.js",
+    "service-worker.js": "/school-days/service-worker.js",
+    "static/css/2.22a7d4ef.chunk.css.map": "/school-days/static/css/2.22a7d4ef.chunk.css.map",
+    "static/css/main.7f9ad7a2.chunk.css.map": "/school-days/static/css/main.7f9ad7a2.chunk.css.map"
+  }
+}
