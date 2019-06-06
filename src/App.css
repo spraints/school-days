@@ -1,0 +1,24 @@
+.month-name, .day-name {
+  text-align: center;
+}
+
+.month-name {
+  font-size: 2em;
+}
+
+.day-name {
+  font-weight: bold;
+}
+
+.day {
+  border: solid 1px #ccc;
+  border-radius: 4px;
+}
+
+.day.School {
+  background-color: #69bf69;
+}
+
+.day.Weekend, .day.Holiday  {
+  background-color: #c1c1c1;
+}

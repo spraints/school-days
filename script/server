@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export PORT=3899
+exec $(dirname $0)/run npm start

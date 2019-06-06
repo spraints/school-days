@@ -1,6 +1,4 @@
 #!/bin/bash
 
-set -e
-
 echo '===> Installing npm modules'
-npm install
+exec $(dirname $0)/run npm install

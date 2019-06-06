@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exec make index.html
+exec $(dirname $0)/run npm run build
