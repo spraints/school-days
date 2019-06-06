@@ -33,4 +33,3 @@ NGINX
 sudo rm -f ${conflink}
 sudo ln -s ${conffile} ${conflink}
 sudo systemctl reload nginx
-
