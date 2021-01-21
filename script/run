@@ -11,9 +11,12 @@ if [ -n "$PORT" ]; then
   xtra="--net host -e PORT=$PORT"
 fi
 
+mkdir -p ${root}/dockerhome
+
 exec docker run -it --rm \
   -u $(id -u):$(id -g) \
   -v ${root}:${root} \
   -w $(pwd -P) \
   -e IN_DOCKER=1 $xtra \
-  node:10-slim "$@"
+  -e HOME=${root}/dockerhome \
+  node:14.3.0 "$@"
